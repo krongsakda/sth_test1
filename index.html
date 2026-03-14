@@ -578,37 +578,40 @@ input[type=checkbox]{accent-color:var(--accent2);}
 
 <!-- ════════════════════ EXPORT MODAL ════════════════════ -->
 <div id="export-modal">
-  <div class="export-modal-box">
+  <div class="export-modal-box" style="max-height:none;width:min(480px,92vw);">
     <div class="export-modal-header">
-      <h3>⬇️ Export ข้อมูลผู้ทำแบบทดสอบ</h3>
+      <h3>📊 ข้อมูลผู้ทำแบบทดสอบ</h3>
       <button class="export-modal-close" onclick="closeExportModal()">✕</button>
     </div>
-    <div class="export-filter-bar">
-      <input class="export-search" type="text" placeholder="🔍 ค้นหาชื่อ / ชื่อเล่น / รหัส นศ." oninput="filterExportList()" id="exportSearchInput">
-      <select class="export-branch-filter" id="exportBranchFilter" onchange="filterExportList()">
-        <option value="">ทุกสาขาวิชา</option>
-      </select>
-    </div>
-    <div class="export-select-all-row">
-      <label>
-        <input type="checkbox" id="exportSelectAll" onchange="toggleSelectAll(this)">
-        เลือกทั้งหมด
-      </label>
-      <span class="export-selected-count" id="exportSelectedCount">เลือก 0 คน</span>
-    </div>
-    <div class="export-list" id="exportList">
-      <!-- items injected by JS -->
-    </div>
-    <div class="export-modal-footer">
-      <div class="export-format-row">
-        <label>รูปแบบไฟล์:</label>
-        <select class="export-format-select" id="exportFormat">
-          <option value="csv">CSV (.csv)</option>
-          <option value="tsv">TSV / Excel (.tsv)</option>
-          <option value="json">JSON (.json)</option>
-        </select>
+    <div style="padding:28px 28px 8px;text-align:center;">
+      <div style="font-size:52px;margin-bottom:14px;animation:iconP 2.5s ease-in-out infinite;">📋</div>
+      <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:10px;">ข้อมูลทั้งหมดถูกบันทึกใน Google Sheets</div>
+      <div style="font-size:13.5px;color:var(--text2);line-height:1.8;margin-bottom:22px;">
+        กดปุ่มด้านล่างเพื่อเปิด Google Sheets<br>และนำข้อมูลไปใช้งานได้เลย
       </div>
-      <button class="export-do-btn" id="exportDoBtn" onclick="doExport()">⬇️ ดาวน์โหลด</button>
+      <a href="https://docs.google.com/spreadsheets/d/1IHzRDJKOTf_MPzsl0oCuHUU9RYsNYGSmrJYs3U8IqkA/edit?usp=drive_link"
+         target="_blank" rel="noopener"
+         style="display:inline-flex;align-items:center;gap:10px;padding:14px 28px;border-radius:50px;
+                background:linear-gradient(135deg,#1a7a3d,#1760bb);color:#fff;
+                font-size:15px;font-weight:700;font-family:inherit;text-decoration:none;
+                box-shadow:0 6px 20px rgba(63,185,80,0.3);transition:transform 0.2s,box-shadow 0.2s;"
+         onmouseover="this.style.transform='scale(1.05)';this.style.boxShadow='0 10px 30px rgba(63,185,80,0.45)'"
+         onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 6px 20px rgba(63,185,80,0.3)'"
+         onclick="closeExportModal()">
+        <span style="font-size:20px;">📊</span> เปิด Google Sheets
+      </a>
+      <div style="margin-top:16px;font-size:11.5px;color:var(--text2);line-height:1.7;">
+        🔗 https://docs.google.com/spreadsheets/d/1IHzRDJKOTf_...<br>
+        (เปิดในแท็บใหม่)
+      </div>
+    </div>
+    <div style="padding:16px 28px 24px;text-align:center;">
+      <button onclick="closeExportModal()"
+              style="background:var(--panel2);border:1px solid var(--border);color:var(--text2);
+                     padding:9px 24px;border-radius:8px;font-size:13px;font-weight:600;
+                     font-family:inherit;cursor:pointer;">
+        ปิด
+      </button>
     </div>
   </div>
 </div>
@@ -1015,129 +1018,33 @@ function exitAdmin(){
 /* ═══════════════════════════════════════
    EXPORT FUNCTIONS
 ═══════════════════════════════════════ */
+function playExportFanfare(){
+  // เพลงสั้น ๆ แจ้งเตือน export
+  try{
+    const c=getAC();
+    const notes=[
+      [523,0],[659,0.15],[784,0.30],[1047,0.45],[784,0.65],[1047,0.80]
+    ];
+    notes.forEach(function(n){
+      const o=c.createOscillator(),g=c.createGain();
+      o.connect(g);g.connect(c.destination);
+      o.type='sine';o.frequency.value=n[0];
+      const t=c.currentTime+n[1];
+      g.gain.setValueAtTime(0,t);
+      g.gain.linearRampToValueAtTime(0.28,t+0.02);
+      g.gain.exponentialRampToValueAtTime(0.001,t+0.35);
+      o.start(t);o.stop(t+0.4);
+    });
+  }catch(e){}
+}
+
 function openExportModal(){
-  if(!studentDB||studentDB.length===0){
-    alert('ยังไม่มีข้อมูลผู้ทำแบบทดสอบ');return;
-  }
-  // Populate branch filter
-  const branches=[...new Set(studentDB.map(s=>s.branch))].sort();
-  const branchSel=document.getElementById('exportBranchFilter');
-  branchSel.innerHTML='<option value="">ทุกสาขาวิชา</option>';
-  branches.forEach(b=>{
-    const o=document.createElement('option');o.value=b;o.textContent=b;branchSel.appendChild(o);
-  });
-  document.getElementById('exportSearchInput').value='';
-  renderExportList();
+  playExportFanfare();
   document.getElementById('export-modal').classList.add('show');
 }
 
 function closeExportModal(){
   document.getElementById('export-modal').classList.remove('show');
-}
-
-function renderExportList(){
-  const list=document.getElementById('exportList');
-  list.innerHTML='';
-  studentDB.forEach((s,i)=>{
-    const lv=getLevelForScore(s.score);
-    const item=document.createElement('div');
-    item.className='export-item';
-    item.dataset.idx=i;
-    item.dataset.name=s.name.toLowerCase();
-    item.dataset.nick=(s.nick||'').toLowerCase();
-    item.dataset.sid=(s.sid||'').toLowerCase();
-    item.dataset.branch=s.branch;
-    item.innerHTML=`
-      <input type="checkbox" class="export-cb" data-idx="${i}" onchange="updateExportCount()">
-      <div class="export-item-info">
-        <div class="export-item-name">${s.name} (${s.nick})</div>
-        <div class="export-item-meta">${s.branch} · ชั้นปี ${s.year} · รหัส ${s.sid}</div>
-      </div>
-      <div class="export-item-score" style="color:${scoreColor(s.score)}">${s.score}/24<br><span style="font-size:10px;font-weight:600;color:var(--text2)">${lv.shortLabel}</span></div>`;
-    item.addEventListener('click',function(e){
-      if(e.target.type==='checkbox')return;
-      const cb=this.querySelector('.export-cb');
-      cb.checked=!cb.checked;updateExportCount();
-    });
-    list.appendChild(item);
-  });
-  updateExportCount();
-}
-
-function filterExportList(){
-  const q=document.getElementById('exportSearchInput').value.toLowerCase().trim();
-  const br=document.getElementById('exportBranchFilter').value;
-  document.querySelectorAll('.export-item').forEach(item=>{
-    const matchSearch=!q||(item.dataset.name.includes(q)||item.dataset.nick.includes(q)||item.dataset.sid.includes(q));
-    const matchBranch=!br||item.dataset.branch===br;
-    item.classList.toggle('hidden',!(matchSearch&&matchBranch));
-  });
-  updateSelectAllState();
-  updateExportCount();
-}
-
-function toggleSelectAll(cb){
-  const visibleCbs=document.querySelectorAll('.export-item:not(.hidden) .export-cb');
-  visibleCbs.forEach(c=>c.checked=cb.checked);
-  updateExportCount();
-}
-
-function updateSelectAllState(){
-  const all=document.querySelectorAll('.export-item:not(.hidden) .export-cb');
-  const checked=document.querySelectorAll('.export-item:not(.hidden) .export-cb:checked');
-  const sa=document.getElementById('exportSelectAll');
-  sa.indeterminate=checked.length>0&&checked.length<all.length;
-  sa.checked=all.length>0&&checked.length===all.length;
-}
-
-function updateExportCount(){
-  const n=document.querySelectorAll('.export-cb:checked').length;
-  document.getElementById('exportSelectedCount').textContent=`เลือก ${n} คน`;
-  document.getElementById('exportDoBtn').disabled=n===0;
-  updateSelectAllState();
-}
-
-function doExport(){
-  const selectedIdxs=[...document.querySelectorAll('.export-cb:checked')].map(cb=>Number(cb.dataset.idx));
-  if(selectedIdxs.length===0)return;
-  const selected=selectedIdxs.map(i=>studentDB[i]);
-  const fmt=document.getElementById('exportFormat').value;
-  const ts=new Date().toISOString().slice(0,10);
-
-  if(fmt==='json'){
-    const out=selected.map(s=>({
-      name:s.name,nick:s.nick,branch:s.branch,year:s.year,sid:s.sid,
-      score:s.score,total:24,level:getLevelForScore(s.score).shortLabel,
-      sth1:s.sthScores[1],sth2:s.sthScores[2],sth3:s.sthScores[3],sth4:s.sthScores[4],
-      sth5:s.sthScores[5],sth6:s.sthScores[6],sth7:s.sthScores[7],sth8:s.sthScores[8],
-      finishedAt:s.finishedAt?new Date(s.finishedAt).toISOString():''
-    }));
-    downloadFile(`sth_export_${ts}.json`,JSON.stringify(out,null,2),'application/json');
-  } else {
-    const sep=fmt==='tsv'?'\t':',';
-    const q=fmt==='csv'?v=>`"${String(v).replace(/"/g,'""')}"`:v=>v;
-    const headers=['ลำดับ','ชื่อ-สกุล','ชื่อเล่น','สาขาวิชา','ชั้นปี','รหัสนักศึกษา','คะแนนรวม','คะแนนเต็ม','ร้อยละ','ระดับ','STH1','STH2','STH3','STH4','STH5','STH6','STH7','STH8','เวลาทำแบบทดสอบ'];
-    const rows=selected.map((s,i)=>[
-      i+1,q(s.name),q(s.nick),q(s.branch),s.year,q(s.sid),
-      s.score,24,Math.round(s.score/24*100),q(getLevelForScore(s.score).shortLabel),
-      s.sthScores[1],s.sthScores[2],s.sthScores[3],s.sthScores[4],
-      s.sthScores[5],s.sthScores[6],s.sthScores[7],s.sthScores[8],
-      q(s.finishedAt?new Date(s.finishedAt).toLocaleString('th-TH'):'')
-    ].join(sep));
-    const bom='\uFEFF'; // UTF-8 BOM for Thai Excel compatibility
-    const content=bom+headers.map(h=>fmt==='csv'?q(h):h).join(sep)+'\n'+rows.join('\n');
-    const ext=fmt==='tsv'?'tsv':'csv';
-    downloadFile(`sth_export_${ts}.${ext}`,content,'text/'+ext+';charset=utf-8');
-  }
-}
-
-function downloadFile(filename,content,mime){
-  const blob=new Blob([content],{type:mime});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;a.download=filename;
-  document.body.appendChild(a);a.click();
-  setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},300);
 }
 
 // Close export modal on backdrop click
