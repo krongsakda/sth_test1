@@ -1,0 +1,1621 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STH Quiz — Systems Thinking & Carbon Neutrality</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1117;--panel:#161b22;--panel2:#1c2128;--border:#30363d;
+  --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a679;
+  --text:#e6edf3;--text2:#8b949e;--text3:#c9d1d9;
+  --correct:#196c2e;--correct-border:#3fb950;
+  --wrong:#5a1e1e;--wrong-border:#f85149;
+  --selected:#1d3557;--selected-border:#58a6ff;--hover:#21262d;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Sarabun','IBM Plex Sans Thai',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+
+/* ══════════════════════════════
+   COVER SCREEN
+══════════════════════════════ */
+#cover-screen{
+  position:fixed;inset:0;z-index:200;
+  background:linear-gradient(135deg,#060d1c 0%,#0c1e3a 45%,#08251a 100%);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+.cv-particles{position:absolute;inset:0;pointer-events:none;}
+.cv-particles span{position:absolute;border-radius:50%;opacity:0.07;animation:floatP linear infinite;}
+@keyframes floatP{0%{transform:translateY(105vh) scale(0.4);opacity:0;}10%{opacity:0.07;}90%{opacity:0.04;}100%{transform:translateY(-15vh) scale(1.1);opacity:0;}}
+.cv-inner{position:relative;z-index:2;text-align:center;max-width:700px;padding:40px 24px;animation:cvIn 0.9s cubic-bezier(.22,1,.36,1) both;}
+@keyframes cvIn{from{opacity:0;transform:translateY(36px);}to{opacity:1;transform:translateY(0);}}
+.cv-badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:5px 16px;border-radius:20px;background:rgba(88,166,255,0.14);color:var(--accent);border:1px solid rgba(88,166,255,0.4);margin-bottom:22px;}
+.cv-icon{font-size:76px;margin-bottom:14px;line-height:1;animation:iconP 3s ease-in-out infinite;}
+@keyframes iconP{0%,100%{transform:scale(1) rotate(0deg);}50%{transform:scale(1.08) rotate(3deg);}}
+.cv-title{font-size:clamp(22px,5vw,38px);font-weight:800;line-height:1.2;margin-bottom:10px;background:linear-gradient(90deg,#58a6ff,#3fb950,#d2a679);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.cv-sub{font-size:16px;color:var(--text2);margin-bottom:6px;}
+.cv-desc{font-size:13.5px;color:var(--text2);margin-bottom:28px;line-height:1.75;}
+.cv-stats{display:flex;gap:14px;justify-content:center;margin-bottom:30px;flex-wrap:wrap;}
+.cv-stat{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:13px 20px;min-width:110px;}
+.cv-stat .csn{font-size:30px;font-weight:800;color:var(--accent2);}
+.cv-stat .csl{font-size:11px;color:var(--text2);margin-top:3px;}
+.cv-btn{display:inline-flex;align-items:center;gap:10px;padding:15px 38px;border-radius:50px;border:none;cursor:pointer;background:linear-gradient(135deg,#1760bb,#1a7a3d);color:#fff;font-size:17px;font-weight:700;font-family:inherit;box-shadow:0 8px 28px rgba(88,166,255,0.25);transition:transform 0.2s,box-shadow 0.2s;animation:btnGl 2.5s ease-in-out infinite;}
+.cv-btn:hover{transform:scale(1.05);box-shadow:0 12px 40px rgba(63,185,80,0.4);}
+@keyframes btnGl{0%,100%{box-shadow:0 8px 28px rgba(88,166,255,0.25);}50%{box-shadow:0 8px 40px rgba(63,185,80,0.35);}}
+.cv-note{margin-top:18px;font-size:12.5px;color:var(--text2);line-height:1.8;}
+
+/* ══════════════════════════════
+   REGISTRATION SCREEN
+══════════════════════════════ */
+#reg-screen{
+  display:none;position:fixed;inset:0;z-index:190;
+  background:linear-gradient(135deg,#060d1c 0%,#0c1e3a 45%,#08251a 100%);
+  align-items:center;justify-content:center;overflow:hidden;
+}
+#reg-screen.show{display:flex;}
+.reg-wrap{position:relative;z-index:2;width:100%;max-width:540px;padding:24px;animation:cvIn 0.5s ease both;}
+.reg-card{
+  background:var(--panel);border:1px solid var(--border);border-radius:20px;
+  padding:36px 40px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5);
+}
+.reg-header{text-align:center;margin-bottom:28px;}
+.reg-icon{font-size:48px;margin-bottom:10px;}
+.reg-title{font-size:22px;font-weight:800;color:var(--text);margin-bottom:4px;}
+.reg-sub{font-size:13px;color:var(--text2);}
+.reg-admin-btn{
+  position:absolute;top:8px;right:8px;
+  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);
+  color:var(--text2);font-size:11px;font-weight:600;font-family:inherit;
+  padding:5px 12px;border-radius:6px;cursor:pointer;letter-spacing:0.05em;
+  transition:background 0.15s,color 0.15s;
+}
+.reg-admin-btn:hover{background:rgba(255,255,255,0.12);color:var(--text);}
+.reg-form{display:flex;flex-direction:column;gap:16px;}
+.reg-field{}
+.reg-label{display:block;font-size:12px;font-weight:700;color:var(--text2);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:6px;}
+.reg-input{
+  width:100%;padding:11px 14px;border-radius:8px;
+  background:var(--panel2);border:1.5px solid var(--border);
+  color:var(--text);font-size:15px;font-family:inherit;
+  transition:border-color 0.15s,background 0.15s;outline:none;
+}
+.reg-input:focus{border-color:var(--accent);background:#192032;}
+.reg-input.error{border-color:var(--wrong-border) !important;background:rgba(90,30,30,0.4);}
+.reg-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.reg-select{
+  width:100%;padding:11px 14px;border-radius:8px;
+  background:var(--panel2);border:1.5px solid var(--border);
+  color:var(--text);font-size:15px;font-family:inherit;
+  transition:border-color 0.15s;outline:none;cursor:pointer;
+  -webkit-appearance:none;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238b949e' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;
+  padding-right:36px;
+}
+.reg-select:focus{border-color:var(--accent);}
+.reg-select.error{border-color:var(--wrong-border) !important;}
+.reg-select option{background:#1c2128;color:var(--text);}
+.reg-error-msg{
+  display:none;align-items:center;gap:8px;
+  background:rgba(90,30,30,0.5);border:1px solid var(--wrong-border);
+  border-radius:8px;padding:10px 14px;margin-top:4px;
+  font-size:13px;font-weight:600;color:#ff8080;
+}
+.reg-error-msg.show{display:flex;}
+.reg-next-btn{
+  display:none;width:100%;padding:14px;border-radius:10px;border:none;
+  background:linear-gradient(135deg,#1760bb,#1a7a3d);color:#fff;
+  font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;
+  margin-top:6px;transition:opacity 0.2s,transform 0.2s;
+  box-shadow:0 6px 20px rgba(88,166,255,0.25);
+}
+.reg-next-btn.show{display:block;animation:popIn 0.3s ease;}
+.reg-next-btn:hover{opacity:0.9;transform:scale(1.01);}
+
+/* ══════════════════════════════
+   ADMIN PASSWORD MODAL
+══════════════════════════════ */
+#admin-modal{
+  display:none;position:fixed;inset:0;z-index:500;
+  background:rgba(0,0,0,0.75);align-items:center;justify-content:center;
+}
+#admin-modal.show{display:flex;animation:fadeIn 0.2s ease;}
+.admin-modal-box{
+  background:var(--panel);border:1px solid var(--border);border-radius:16px;
+  padding:32px 36px;width:340px;text-align:center;
+  animation:popIn 0.25s ease;
+}
+.admin-modal-box h3{font-size:18px;font-weight:700;margin-bottom:6px;}
+.admin-modal-box p{font-size:13px;color:var(--text2);margin-bottom:20px;}
+.admin-pw-input{
+  width:100%;padding:11px 14px;border-radius:8px;
+  background:var(--panel2);border:1.5px solid var(--border);
+  color:var(--text);font-size:20px;font-family:monospace;letter-spacing:0.3em;
+  text-align:center;outline:none;margin-bottom:8px;
+  transition:border-color 0.15s;
+}
+.admin-pw-input:focus{border-color:var(--accent);}
+.admin-pw-input.error{border-color:var(--wrong-border);}
+.admin-pw-err{font-size:12px;color:#ff8080;margin-bottom:12px;min-height:16px;}
+.admin-modal-btns{display:flex;gap:8px;}
+.adm-btn{flex:1;padding:10px;border-radius:8px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;border:none;transition:opacity 0.15s;}
+.adm-btn-cancel{background:var(--panel2);border:1px solid var(--border);color:var(--text2);}
+.adm-btn-cancel:hover{color:var(--text);}
+.adm-btn-ok{background:var(--accent);color:#000;}
+.adm-btn-ok:hover{opacity:0.85;}
+
+/* ══════════════════════════════
+   ADMIN DASHBOARD
+══════════════════════════════ */
+#admin-screen{
+  display:none;position:fixed;inset:0;z-index:400;
+  background:var(--bg);flex-direction:column;overflow:hidden;
+}
+#admin-screen.show{display:flex;}
+.adm-topbar{
+  background:var(--panel);border-bottom:1px solid var(--border);
+  padding:0 24px;height:56px;display:flex;align-items:center;
+  justify-content:space-between;flex-shrink:0;
+}
+.adm-topbar-left{display:flex;align-items:center;gap:12px;}
+.adm-logo{font-size:16px;font-weight:800;color:var(--accent);}
+.adm-logo span{color:var(--accent2);}
+.adm-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(248,81,73,0.15);color:#f85149;border:1px solid rgba(248,81,73,0.3);}
+.adm-exit-btn{background:var(--panel2);border:1px solid var(--border);color:var(--text2);padding:7px 18px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;transition:all 0.15s;}
+.adm-exit-btn:hover{background:var(--wrong);border-color:var(--wrong-border);color:#ff8080;}
+.adm-body{flex:1;overflow-y:auto;padding:24px;max-width:1200px;width:100%;margin:0 auto;}
+.adm-body::-webkit-scrollbar{width:6px;}
+.adm-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
+.adm-section{margin-bottom:36px;}
+.adm-section-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.adm-section-title .tag{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:2px 8px;border-radius:4px;background:rgba(88,166,255,0.15);color:var(--accent);border:1px solid rgba(88,166,255,0.3);}
+
+/* Summary KPI cards */
+.adm-kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px;}
+.adm-kpi{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 18px;}
+.adm-kpi .kpi-val{font-size:32px;font-weight:800;line-height:1;}
+.adm-kpi .kpi-lbl{font-size:12px;color:var(--text2);margin-top:4px;}
+.kpi-blue{color:var(--accent);}
+.kpi-green{color:var(--accent2);}
+.kpi-gold{color:var(--accent4);}
+.kpi-red{color:var(--accent3);}
+
+/* Table */
+.adm-table-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border);}
+.adm-table{width:100%;border-collapse:collapse;font-size:13px;}
+.adm-table th{background:var(--panel2);color:var(--text2);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:10px 14px;text-align:left;white-space:nowrap;}
+.adm-table td{padding:11px 14px;border-top:1px solid var(--border);color:var(--text3);vertical-align:middle;}
+.adm-table tr:hover td{background:rgba(255,255,255,0.03);}
+.adm-table .rank-num{font-weight:700;color:var(--text2);font-size:12px;}
+.level-pill{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap;}
+.pill-master{background:rgba(63,185,80,0.15);color:#3fb950;border:1px solid rgba(63,185,80,0.3);}
+.pill-advanced{background:rgba(88,166,255,0.15);color:#58a6ff;border:1px solid rgba(88,166,255,0.3);}
+.pill-inter{background:rgba(210,166,121,0.15);color:#d2a679;border:1px solid rgba(210,166,121,0.3);}
+.pill-basic{background:rgba(248,81,73,0.15);color:#f85149;border:1px solid rgba(248,81,73,0.3);}
+
+/* Branch tabs */
+.branch-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.branch-tab{padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;border:1.5px solid var(--border);background:var(--panel2);color:var(--text2);transition:all 0.15s;}
+.branch-tab:hover{border-color:var(--accent);color:var(--accent);}
+.branch-tab.active{border-color:var(--accent);background:rgba(88,166,255,0.12);color:var(--accent);}
+
+/* Charts */
+.adm-charts-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+@media(max-width:700px){.adm-charts-row{grid-template-columns:1fr;}}
+.chart-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 20px;}
+.chart-card-title{font-size:12px;font-weight:700;color:var(--text2);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:14px;}
+.bar-chart{display:flex;flex-direction:column;gap:7px;}
+.bar-row{display:flex;align-items:center;gap:10px;}
+.bar-lbl{font-size:12px;color:var(--text2);width:80px;flex-shrink:0;text-align:right;}
+.bar-track{flex:1;height:18px;background:var(--panel2);border-radius:4px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:4px;transition:width 0.6s cubic-bezier(.22,1,.36,1);display:flex;align-items:center;padding-left:6px;}
+.bar-val{font-size:11px;font-weight:700;color:#000;white-space:nowrap;}
+.donut-wrap{display:flex;align-items:center;gap:20px;justify-content:center;}
+.donut-legend{display:flex;flex-direction:column;gap:8px;}
+.donut-legend-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text3);}
+.donut-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.level-dist-bars{display:flex;height:28px;border-radius:6px;overflow:hidden;gap:2px;}
+.level-dist-bar{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#000;transition:flex 0.6s cubic-bezier(.22,1,.36,1);}
+
+/* Branch analysis */
+.branch-analysis-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:12px;}
+.ba-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.ba-branch-name{font-size:16px;font-weight:700;color:var(--text);}
+.ba-count{font-size:12px;color:var(--text2);background:var(--panel2);padding:2px 8px;border-radius:20px;border:1px solid var(--border);}
+.ba-stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin-bottom:14px;}
+.ba-stat{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;text-align:center;}
+.ba-stat-val{font-size:22px;font-weight:800;color:var(--accent);}
+.ba-stat-lbl{font-size:11px;color:var(--text2);margin-top:2px;}
+.ba-analysis{font-size:13.5px;line-height:1.8;color:var(--text3);padding:12px 16px;background:rgba(88,166,255,0.05);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;}
+
+/* No data state */
+.adm-empty{text-align:center;padding:60px 20px;color:var(--text2);}
+.adm-empty-icon{font-size:56px;margin-bottom:14px;}
+.adm-empty-text{font-size:16px;font-weight:600;margin-bottom:6px;color:var(--text);}
+.adm-empty-sub{font-size:13px;}
+
+/* Export button */
+.adm-export-btn{
+  display:flex;align-items:center;gap:7px;
+  background:rgba(63,185,80,0.12);border:1px solid rgba(63,185,80,0.4);
+  color:#3fb950;padding:7px 16px;border-radius:8px;
+  cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;
+  transition:all 0.15s;
+}
+.adm-export-btn:hover{background:rgba(63,185,80,0.22);border-color:#3fb950;}
+
+/* Export modal */
+#export-modal{
+  display:none;position:fixed;inset:0;z-index:600;
+  background:rgba(0,0,0,0.78);align-items:center;justify-content:center;
+}
+#export-modal.show{display:flex;animation:fadeIn 0.2s ease;}
+.export-modal-box{
+  background:var(--panel);border:1px solid var(--border);border-radius:16px;
+  width:min(600px,94vw);max-height:80vh;display:flex;flex-direction:column;
+  animation:popIn 0.25s ease;overflow:hidden;
+}
+.export-modal-header{
+  padding:20px 24px 14px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.export-modal-header h3{font-size:17px;font-weight:800;display:flex;align-items:center;gap:8px;}
+.export-modal-close{background:none;border:none;color:var(--text2);font-size:22px;cursor:pointer;line-height:1;padding:2px 6px;border-radius:6px;}
+.export-modal-close:hover{color:var(--text);background:var(--hover);}
+.export-filter-bar{
+  padding:12px 24px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex-shrink:0;
+}
+.export-search{
+  flex:1;min-width:160px;padding:8px 12px;border-radius:8px;
+  background:var(--panel2);border:1.5px solid var(--border);
+  color:var(--text);font-size:13px;font-family:inherit;outline:none;
+}
+.export-search:focus{border-color:var(--accent);}
+.export-branch-filter{
+  padding:8px 12px;border-radius:8px;
+  background:var(--panel2);border:1.5px solid var(--border);
+  color:var(--text);font-size:13px;font-family:inherit;outline:none;cursor:pointer;
+}
+.export-branch-filter:focus{border-color:var(--accent);}
+.export-select-all-row{
+  padding:10px 24px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+  background:var(--panel2);
+}
+.export-select-all-row label{
+  display:flex;align-items:center;gap:8px;cursor:pointer;
+  font-size:13px;font-weight:600;color:var(--text3);
+}
+.export-selected-count{font-size:12px;color:var(--accent);font-weight:700;}
+.export-list{overflow-y:auto;flex:1;padding:8px 0;}
+.export-list::-webkit-scrollbar{width:5px;}
+.export-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
+.export-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 24px;cursor:pointer;transition:background 0.1s;
+  border-bottom:1px solid rgba(48,54,61,0.5);
+}
+.export-item:hover{background:var(--hover);}
+.export-item.hidden{display:none;}
+.export-item input[type=checkbox]{
+  width:16px;height:16px;cursor:pointer;accent-color:var(--accent2);flex-shrink:0;
+}
+.export-item-info{flex:1;min-width:0;}
+.export-item-name{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.export-item-meta{font-size:11px;color:var(--text2);margin-top:2px;}
+.export-item-score{
+  font-size:14px;font-weight:800;flex-shrink:0;
+}
+.export-modal-footer{
+  padding:14px 24px;border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:10px;
+}
+.export-format-row{display:flex;align-items:center;gap:8px;}
+.export-format-row label{font-size:12px;color:var(--text2);}
+.export-format-select{
+  padding:6px 10px;border-radius:6px;
+  background:var(--panel2);border:1px solid var(--border);
+  color:var(--text);font-size:12px;font-family:inherit;outline:none;cursor:pointer;
+}
+.export-do-btn{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 22px;border-radius:8px;border:none;
+  background:linear-gradient(135deg,#1760bb,#1a7a3d);
+  color:#fff;font-size:14px;font-weight:700;font-family:inherit;
+  cursor:pointer;transition:opacity 0.15s,transform 0.1s;
+}
+.export-do-btn:hover{opacity:0.9;transform:scale(1.02);}
+.export-do-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+/* checkbox style */
+input[type=checkbox]{accent-color:var(--accent2);}
+
+/* ══════════════════════════════
+   QUIZ SCREEN
+══════════════════════════════ */
+#quiz-screen{display:none;flex-direction:column;height:100vh;}
+#quiz-screen.active{display:flex;}
+.topbar{background:var(--panel);border-bottom:1px solid var(--border);padding:0 20px;height:54px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:12px;}
+.topbar-left{display:flex;align-items:center;gap:14px;}
+.logo{font-size:14px;font-weight:700;color:var(--accent);letter-spacing:0.03em;white-space:nowrap;}
+.logo span{color:var(--accent2);}
+.divider-v{width:1px;height:24px;background:var(--border);}
+.quiz-meta{font-size:12px;color:var(--text2);}
+.progress-wrap{display:flex;align-items:center;gap:10px;flex:1;max-width:420px;}
+.progress-bar-outer{flex:1;height:6px;background:var(--border);border-radius:99px;overflow:hidden;}
+.progress-bar-inner{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;transition:width 0.4s ease;}
+.progress-label{font-size:12px;color:var(--text2);white-space:nowrap;min-width:60px;text-align:right;}
+.score-badge{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:4px 12px;font-size:13px;font-weight:600;white-space:nowrap;}
+.score-badge .s-num{color:var(--accent2);}
+.score-badge .s-total{color:var(--text2);}
+.main{display:flex;flex:1;overflow:hidden;}
+.panel-left{width:42%;min-width:290px;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;}
+.panel-header{padding:14px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.panel-tag{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:4px;}
+.tag-situation{background:rgba(88,166,255,0.15);color:var(--accent);border:1px solid rgba(88,166,255,0.3);}
+.tag-question{background:rgba(63,185,80,0.15);color:var(--accent2);border:1px solid rgba(63,185,80,0.3);}
+.panel-title{font-size:13px;font-weight:600;color:var(--text3);}
+.situation-scroll{overflow-y:auto;flex:1;padding:20px;}
+.situation-scroll::-webkit-scrollbar{width:5px;}
+.situation-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
+.situation-set-label{font-size:11px;font-weight:700;letter-spacing:0.08em;color:var(--accent4);text-transform:uppercase;margin-bottom:12px;}
+.situation-card{background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:20px;line-height:1.75;font-size:14px;color:var(--text3);}
+.situation-card .sit-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.situation-card .sit-body{margin-bottom:12px;}
+.situation-card .sit-measure{margin-top:14px;padding:10px 14px;background:rgba(88,166,255,0.06);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;font-size:12.5px;color:var(--accent);font-style:italic;}
+.panel-right{flex:1;background:var(--bg);display:flex;flex-direction:column;overflow:hidden;}
+.question-scroll{overflow-y:auto;flex:1;padding:24px 28px;}
+.question-scroll::-webkit-scrollbar{width:5px;}
+.question-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
+.question-num{font-size:11px;font-weight:700;letter-spacing:0.08em;color:var(--text2);text-transform:uppercase;margin-bottom:6px;}
+.sth-chip{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;background:rgba(210,166,121,0.15);color:var(--accent4);border:1px solid rgba(210,166,121,0.3);margin-left:8px;vertical-align:middle;}
+.question-text{font-size:16px;font-weight:600;line-height:1.7;color:var(--text);margin-bottom:24px;}
+.choices{display:flex;flex-direction:column;gap:10px;margin-bottom:28px;}
+.choice-btn{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;background:var(--panel);border:1.5px solid var(--border);border-radius:10px;cursor:pointer;text-align:left;transition:background 0.15s,border-color 0.15s,transform 0.1s;font-family:inherit;color:var(--text3);font-size:14px;line-height:1.65;width:100%;}
+.choice-btn:hover:not(:disabled){background:var(--hover);border-color:var(--accent);transform:translateX(2px);}
+.choice-btn:disabled{cursor:default;}
+.choice-letter{flex-shrink:0;width:26px;height:26px;border-radius:6px;background:var(--panel2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--text2);margin-top:1px;transition:all 0.15s;}
+.choice-btn.selected{background:var(--selected);border-color:var(--selected-border);}
+.choice-btn.selected .choice-letter{background:var(--accent);color:#000;border-color:var(--accent);}
+.choice-btn.correct{background:var(--correct);border-color:var(--correct-border);color:#e6edf3;}
+.choice-btn.correct .choice-letter{background:var(--correct-border);color:#000;border-color:var(--correct-border);}
+.choice-btn.wrong{background:var(--wrong);border-color:var(--wrong-border);color:#e6edf3;}
+.choice-btn.wrong .choice-letter{background:var(--wrong-border);color:#fff;border-color:var(--wrong-border);}
+@keyframes pulseCorrect{0%,100%{box-shadow:none;}50%{box-shadow:0 0 0 6px rgba(63,185,80,0.25);}}
+@keyframes pulseWrong{0%,100%{box-shadow:none;}50%{box-shadow:0 0 0 6px rgba(248,81,73,0.25);}}
+.choice-btn.correct.new-anim{animation:pulseCorrect 0.5s ease;}
+.choice-btn.wrong.new-anim{animation:pulseWrong 0.5s ease;}
+.explanation{display:none;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:24px;font-size:13.5px;line-height:1.7;color:var(--text3);animation:fadeInUp 0.25s ease;}
+.explanation.show{display:block;}
+.explanation .exp-label{font-size:11px;font-weight:700;letter-spacing:0.08em;color:var(--accent2);text-transform:uppercase;margin-bottom:8px;}
+.explanation .correct-ans{color:var(--accent2);font-weight:600;}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.bottom-nav{padding:14px 28px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0;background:var(--panel);}
+.btn{padding:9px 20px;border-radius:8px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;border:none;transition:opacity 0.15s,transform 0.1s;letter-spacing:0.01em;}
+.btn:disabled{opacity:0.35;cursor:default;}
+.btn:active:not(:disabled){transform:scale(0.97);}
+.btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--text2);}
+.btn-ghost:hover:not(:disabled){background:var(--hover);color:var(--text);}
+.btn-primary{background:var(--accent);color:#000;}
+.btn-primary:hover:not(:disabled){opacity:0.85;}
+.btn-success{background:var(--accent2);color:#000;}
+.btn-success:hover:not(:disabled){opacity:0.85;}
+.q-nav{display:flex;gap:5px;flex-wrap:wrap;max-width:400px;}
+.q-dot{width:22px;height:22px;border-radius:5px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1.5px solid var(--border);background:var(--panel2);color:var(--text2);transition:all 0.15s;}
+.q-dot:hover{border-color:var(--accent);color:var(--accent);}
+.q-dot.active{border-color:var(--accent);background:var(--accent);color:#000;}
+.q-dot.answered-correct{border-color:var(--correct-border);background:var(--correct);color:var(--correct-border);}
+.q-dot.answered-wrong{border-color:var(--wrong-border);background:var(--wrong);color:var(--wrong-border);}
+
+/* ── ANSWER FLASH ── */
+.answer-flash{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);z-index:600;pointer-events:none;font-size:90px;transition:transform 0.18s cubic-bezier(.175,.885,.32,1.275),opacity 0.3s;opacity:0;}
+.answer-flash.pop{transform:translate(-50%,-50%) scale(1.1);opacity:1;}
+.answer-flash.fade{transform:translate(-50%,-50%) scale(0.7);opacity:0;transition:transform 0.3s,opacity 0.3s;}
+
+/* ── BREAK SCREEN ── */
+#break-screen{display:none;position:fixed;inset:0;z-index:300;background:linear-gradient(135deg,#05111f 0%,#0a2414 55%,#14052a 100%);align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:30px;}
+#break-screen.show{display:flex;}
+.bk-inner{max-width:480px;animation:bkIn 0.5s cubic-bezier(.22,1,.36,1) both;}
+@keyframes bkIn{from{opacity:0;transform:scale(0.88);}to{opacity:1;transform:scale(1);}}
+.bk-emoji{font-size:72px;margin-bottom:14px;animation:breathe 2.2s ease-in-out infinite;}
+@keyframes breathe{0%,100%{transform:scale(1);}50%{transform:scale(1.1);}}
+.bk-title{font-size:30px;font-weight:800;margin-bottom:10px;background:linear-gradient(90deg,#58a6ff,#3fb950);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.bk-sub{font-size:15px;color:var(--text2);margin-bottom:6px;line-height:1.7;}
+.bk-msg{font-size:17px;font-weight:600;color:var(--accent4);margin-bottom:24px;line-height:1.65;}
+.bk-clock{position:relative;width:130px;height:130px;margin:0 auto 20px;}
+.bk-clock svg{position:absolute;top:0;left:0;transform:rotate(-90deg);}
+.bk-ring-bg{stroke:#0f2018;stroke-width:6;fill:none;}
+.bk-ring{stroke:var(--accent2);stroke-width:6;fill:none;stroke-dasharray:351;stroke-dashoffset:0;transition:stroke-dashoffset 1s linear,stroke 1s;stroke-linecap:round;}
+.bk-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:48px;font-weight:800;color:var(--accent2);}
+.bk-notes{display:flex;gap:10px;justify-content:center;margin-bottom:6px;font-size:26px;}
+.bk-note{animation:noteB 0.7s ease-in-out infinite alternate;}
+.bk-note:nth-child(2){animation-delay:0.2s;}
+.bk-note:nth-child(3){animation-delay:0.4s;}
+@keyframes noteB{from{transform:translateY(0) rotate(-8deg);}to{transform:translateY(-10px) rotate(8deg);}}
+.bk-music-label{font-size:13px;color:var(--text2);margin-bottom:16px;}
+.bk-skip-btn{background:transparent;border:1px solid rgba(255,255,255,0.18);color:var(--text2);padding:8px 22px;border-radius:20px;cursor:pointer;font-size:13px;font-family:inherit;transition:background 0.15s;}
+.bk-skip-btn:hover{background:rgba(255,255,255,0.06);color:var(--text);}
+
+/* ── SUMMARY ── */
+#summary-screen{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.87);z-index:100;align-items:center;justify-content:center;padding:20px;overflow-y:auto;}
+#summary-screen.show{display:flex;animation:fadeIn 0.3s ease;}
+.summary-box{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:32px 38px;width:580px;max-width:94vw;text-align:center;animation:popIn 0.3s ease;max-height:90vh;overflow-y:auto;}
+.summary-box::-webkit-scrollbar{width:4px;}
+.summary-box::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
+.summary-box h2{font-size:21px;margin-bottom:6px;}
+.sum-name{font-size:14px;color:var(--text2);margin-bottom:16px;}
+.sum-score-wrap{margin:4px 0 16px;}
+.sum-score{font-size:68px;font-weight:800;line-height:1;background:linear-gradient(90deg,#3fb950,#58a6ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.sum-total{font-size:15px;color:var(--text2);margin-top:4px;}
+.lvl-card{margin:16px 0;padding:18px 22px;border-radius:12px;border:2px solid;text-align:left;}
+.lvl-card .lc-badge{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;}
+.lvl-card .lc-title{font-size:21px;font-weight:800;margin-bottom:8px;}
+.lvl-card .lc-desc{font-size:13.5px;line-height:1.75;color:var(--text3);}
+.lvl-card .lc-tips{font-size:12.5px;color:var(--text2);margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08);}
+.lv-master{background:rgba(63,185,80,0.07);border-color:#3fb950;}.lv-master .lc-badge,.lv-master .lc-title{color:#3fb950;}
+.lv-advanced{background:rgba(88,166,255,0.07);border-color:#58a6ff;}.lv-advanced .lc-badge,.lv-advanced .lc-title{color:#58a6ff;}
+.lv-inter{background:rgba(210,166,121,0.07);border-color:#d2a679;}.lv-inter .lc-badge,.lv-inter .lc-title{color:#d2a679;}
+.lv-basic{background:rgba(248,81,73,0.07);border-color:#f85149;}.lv-basic .lc-badge,.lv-basic .lc-title{color:#f85149;}
+.sth-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:22px;}
+.sth-cell{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:10px 6px;}
+.sth-cell .sc-label{color:var(--text2);margin-bottom:4px;font-size:12px;}
+.sth-cell .sc-val{font-size:18px;font-weight:700;}
+.sc-val.perfect{color:var(--accent2);}
+.sc-val.partial{color:var(--accent4);}
+.sc-val.poor{color:var(--accent3);}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+@keyframes popIn{from{opacity:0;transform:scale(0.9) translateY(16px);}to{opacity:1;transform:scale(1) translateY(0);}}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════ COVER ════════════════════ -->
+<div id="cover-screen">
+  <div class="cv-particles" id="cvParticles"></div>
+  <div class="cv-inner">
+    <div class="cv-badge">🎓 แบบทดสอบ · Systems Thinking in Action</div>
+    <div class="cv-icon">🌿</div>
+    <h1 class="cv-title">ความเป็นกลางทางคาร์บอน<br>& Systems Thinking</h1>
+    <p class="cv-sub">Carbon Neutrality × STH ขั้น 1–8</p>
+    <p class="cv-desc">ทดสอบความสามารถคิดเชิงระบบผ่าน 3 สถานการณ์จริง<br>🍵 กาแฟสีเขียว &nbsp;·&nbsp; ♻️ จัดการขยะ &nbsp;·&nbsp; 🏭 ตลาดคาร์บอนระดับชาติ</p>
+    <div class="cv-stats">
+      <div class="cv-stat"><div class="csn">24</div><div class="csl">ข้อคำถาม</div></div>
+      <div class="cv-stat"><div class="csn">3</div><div class="csl">สถานการณ์</div></div>
+      <div class="cv-stat"><div class="csn">8</div><div class="csl">ระดับ STH</div></div>
+      <div class="cv-stat"><div class="csn">4</div><div class="csl">ระดับคะแนน</div></div>
+    </div>
+    <button class="cv-btn" onclick="goToReg()"><span>📝</span> กรอกข้อมูลเพื่อเริ่มทำแบบทดสอบ</button>
+    <p class="cv-note">📖 อ่านสถานการณ์ทางซ้าย · เลือกคำตอบทางขวา<br>🎵 เปิดเสียงเพื่อประสบการณ์สมบูรณ์ · พักสายตา 10 วิ หลังข้อที่ 12</p>
+  </div>
+</div>
+
+<!-- ════════════════════ REGISTRATION ════════════════════ -->
+<div id="reg-screen">
+  <div class="cv-particles" id="regParticles"></div>
+  <div class="reg-wrap">
+    <div class="reg-card">
+      <!-- Admin button top-right -->
+      <button class="reg-admin-btn" onclick="openAdminModal()">🔐 Admin</button>
+
+      <div class="reg-header">
+        <div class="reg-icon">📋</div>
+        <div class="reg-title">กรอกข้อมูลผู้ทำแบบทดสอบ</div>
+        <div class="reg-sub">กรุณากรอกข้อมูลให้ครบทุกช่องก่อนเริ่มทำแบบทดสอบ</div>
+      </div>
+
+      <div class="reg-form">
+        <div class="reg-field">
+          <label class="reg-label">ชื่อ-สกุล</label>
+          <input class="reg-input" id="f-name" type="text" placeholder="เช่น สมชาย ใจดี" oninput="checkForm()">
+        </div>
+        <div class="reg-row">
+          <div class="reg-field">
+            <label class="reg-label">ชื่อเล่น</label>
+            <input class="reg-input" id="f-nick" type="text" placeholder="เช่น แบงค์" oninput="checkForm()">
+          </div>
+          <div class="reg-field">
+            <label class="reg-label">ชั้นปีที่</label>
+            <select class="reg-select" id="f-year" onchange="checkForm()">
+              <option value="">— เลือกชั้นปี —</option>
+              <option>ปี 1</option><option>ปี 2</option><option>ปี 3</option><option>ปี 4</option><option>ปี 5</option><option>บัณฑิตศึกษา</option>
+            </select>
+          </div>
+        </div>
+        <div class="reg-field">
+          <label class="reg-label">สาขาวิชา</label>
+          <input class="reg-input" id="f-branch" type="text" placeholder="เช่น วิทยาศาสตร์สิ่งแวดล้อม" oninput="checkForm()">
+        </div>
+        <div class="reg-field">
+          <label class="reg-label">รหัสนักศึกษา</label>
+          <input class="reg-input" id="f-id" type="text" placeholder="เช่น 6601234567" oninput="checkForm()">
+        </div>
+
+        <div class="reg-error-msg" id="regError">
+          <span>⚠️</span><span>โปรดกรอกข้อมูลให้ครบทุกช่อง</span>
+        </div>
+
+        <button class="reg-next-btn" id="regNextBtn" onclick="startQuiz()">
+          เริ่มทำแบบทดสอบ →
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ ADMIN PASSWORD MODAL ════════════════════ -->
+<div id="admin-modal">
+  <div class="admin-modal-box">
+    <h3>🔐 Admin Login</h3>
+    <p>กรุณาใส่รหัสผ่านเพื่อเข้าสู่ระบบผู้ดูแล</p>
+    <input class="admin-pw-input" id="adminPwInput" type="password" maxlength="6" placeholder="••••" oninput="clearPwError()" onkeydown="if(event.key==='Enter')checkAdminPw()">
+    <div class="admin-pw-err" id="adminPwErr"></div>
+    <div class="admin-modal-btns">
+      <button class="adm-btn adm-btn-cancel" onclick="closeAdminModal()">ยกเลิก</button>
+      <button class="adm-btn adm-btn-ok" onclick="checkAdminPw()">เข้าสู่ระบบ</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ ADMIN DASHBOARD ════════════════════ -->
+<div id="admin-screen">
+  <div class="adm-topbar">
+    <div class="adm-topbar-left">
+      <div class="adm-logo">STH <span>Admin</span></div>
+      <div class="adm-badge">🔐 ADMIN MODE</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <button class="adm-export-btn" onclick="openExportModal()">⬇️ Export ข้อมูล</button>
+      <button class="adm-exit-btn" onclick="exitAdmin()">← ออก / กลับหน้าแรก</button>
+    </div>
+  </div>
+  <div class="adm-body" id="admBody">
+    <!-- rendered by JS -->
+  </div>
+</div>
+
+<!-- ════════════════════ EXPORT MODAL ════════════════════ -->
+<div id="export-modal">
+  <div class="export-modal-box">
+    <div class="export-modal-header">
+      <h3>⬇️ Export ข้อมูลผู้ทำแบบทดสอบ</h3>
+      <button class="export-modal-close" onclick="closeExportModal()">✕</button>
+    </div>
+    <div class="export-filter-bar">
+      <input class="export-search" type="text" placeholder="🔍 ค้นหาชื่อ / ชื่อเล่น / รหัส นศ." oninput="filterExportList()" id="exportSearchInput">
+      <select class="export-branch-filter" id="exportBranchFilter" onchange="filterExportList()">
+        <option value="">ทุกสาขาวิชา</option>
+      </select>
+    </div>
+    <div class="export-select-all-row">
+      <label>
+        <input type="checkbox" id="exportSelectAll" onchange="toggleSelectAll(this)">
+        เลือกทั้งหมด
+      </label>
+      <span class="export-selected-count" id="exportSelectedCount">เลือก 0 คน</span>
+    </div>
+    <div class="export-list" id="exportList">
+      <!-- items injected by JS -->
+    </div>
+    <div class="export-modal-footer">
+      <div class="export-format-row">
+        <label>รูปแบบไฟล์:</label>
+        <select class="export-format-select" id="exportFormat">
+          <option value="csv">CSV (.csv)</option>
+          <option value="tsv">TSV / Excel (.tsv)</option>
+          <option value="json">JSON (.json)</option>
+        </select>
+      </div>
+      <button class="export-do-btn" id="exportDoBtn" onclick="doExport()">⬇️ ดาวน์โหลด</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ QUIZ ════════════════════ -->
+<div id="quiz-screen">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="logo">STH <span>Quiz</span></div>
+      <div class="divider-v"></div>
+      <div class="quiz-meta" id="quizMetaName">Systems Thinking × Carbon Neutrality · 24 ข้อ</div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar-outer"><div class="progress-bar-inner" id="progressBar" style="width:0%"></div></div>
+      <div class="progress-label" id="progressLabel">0 / 24</div>
+    </div>
+    <div class="score-badge">คะแนน <span class="s-num" id="scoreNum">0</span><span class="s-total"> / <span id="scoreTot">0</span></span></div>
+  </div>
+  <div class="main">
+    <div class="panel-left">
+      <div class="panel-header">
+        <span class="panel-tag tag-situation">สถานการณ์</span>
+        <span class="panel-title" id="situationSetLabel"></span>
+      </div>
+      <div class="situation-scroll"><div id="situationContent"></div></div>
+    </div>
+    <div class="panel-right">
+      <div class="panel-header">
+        <span class="panel-tag tag-question">คำถาม</span>
+        <span class="panel-title" id="questionSetLabel"></span>
+      </div>
+      <div class="question-scroll">
+        <div class="question-num" id="qNum"></div>
+        <div class="question-text" id="qText"></div>
+        <div class="choices" id="choicesContainer"></div>
+        <div class="explanation" id="explanation">
+          <div class="exp-label">✦ เฉลยและเหตุผล</div>
+          <div id="expContent"></div>
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <div class="q-nav" id="qNav"></div>
+        <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
+          <button class="btn btn-ghost" id="btnPrev" onclick="navigate(-1)">← ก่อนหน้า</button>
+          <button class="btn btn-primary" id="btnNext" onclick="navigate(1)">ถัดไป →</button>
+          <button class="btn btn-success" id="btnFinish" onclick="showSummary()" style="display:none">ดูผลรวม ✓</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ANSWER FLASH -->
+<div class="answer-flash" id="ansFlash"></div>
+
+<!-- ════════════════════ BREAK ════════════════════ -->
+<div id="break-screen">
+  <div class="bk-inner">
+    <div class="bk-emoji">👀</div>
+    <div class="bk-title">พักสายตาสักครู่นะ!</div>
+    <div class="bk-sub">คุณผ่านครึ่งทางมาได้แล้ว — ยอดเยี่ยมมาก! 🎉</div>
+    <div class="bk-msg">"นักคิดเชิงระบบที่ดี<br>รู้จักพักเพื่อเห็น 'ภาพใหญ่' ได้ชัดขึ้นเสมอ ✨"</div>
+    <div class="bk-clock">
+      <svg width="130" height="130" viewBox="0 0 130 130">
+        <circle class="bk-ring-bg" cx="65" cy="65" r="56"/>
+        <circle class="bk-ring" id="bkRing" cx="65" cy="65" r="56"/>
+      </svg>
+      <div class="bk-num" id="bkNum">10</div>
+    </div>
+    <div class="bk-notes"><span class="bk-note">🎵</span><span class="bk-note">🎶</span><span class="bk-note">🎵</span></div>
+    <div class="bk-music-label">กำลังเล่นเพลงพักผ่อน — ผ่อนคลายสายตา</div>
+    <button class="bk-skip-btn" onclick="endBreak()">ข้ามไปข้อ 13 →</button>
+  </div>
+</div>
+
+<!-- ════════════════════ SUMMARY ════════════════════ -->
+<div id="summary-screen">
+  <div class="summary-box">
+    <h2>📊 สรุปผลการทำแบบทดสอบ</h2>
+    <div class="sum-name" id="sumName"></div>
+    <div class="sum-score-wrap">
+      <div class="sum-score" id="sumScore">0</div>
+      <div class="sum-total">จาก 24 คะแนน</div>
+    </div>
+    <div id="sumLevelCard"></div>
+    <div class="sth-grid" id="sthGrid"></div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <button class="btn btn-ghost" onclick="document.getElementById('summary-screen').classList.remove('show')">ปิด</button>
+      <button class="btn btn-primary" onclick="restartQuiz()">🔄 เริ่มใหม่</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ SCRIPT ════════════════════ -->
+<script>
+/* ═══════════════════════════════════════
+   AUDIO ENGINE
+═══════════════════════════════════════ */
+const AC=window.AudioContext||window.webkitAudioContext;
+let ac=null;
+function getAC(){if(!ac)ac=new AC();return ac;}
+function tone(f,t,dur,g,d=0){
+  try{
+    const c=getAC(),o=c.createOscillator(),gn=c.createGain();
+    o.connect(gn);gn.connect(c.destination);
+    o.type=t;o.frequency.value=f;
+    const s=c.currentTime+d;
+    gn.gain.setValueAtTime(0,s);
+    gn.gain.linearRampToValueAtTime(g,s+0.015);
+    gn.gain.exponentialRampToValueAtTime(0.001,s+dur);
+    o.start(s);o.stop(s+dur+0.05);
+  }catch(e){}
+}
+function playCorrect(){tone(523,'sine',0.18,0.32,0);tone(659,'sine',0.18,0.32,0.11);tone(784,'sine',0.22,0.32,0.22);tone(1047,'sine',0.38,0.25,0.33);}
+function playWrong(){tone(350,'sawtooth',0.14,0.18,0);tone(295,'sawtooth',0.14,0.18,0.11);tone(220,'sawtooth',0.22,0.16,0.22);}
+function playError(){tone(200,'sawtooth',0.25,0.3,0);tone(180,'sawtooth',0.3,0.25,0.1);}
+
+let bkMusicOn=false,bkMusicInt=null,bkNoteIdx=0;
+const bkNotes=[261,294,329,392,440,392,329,294,261,294];
+function startBkMusic(){
+  if(bkMusicOn)return;bkMusicOn=true;
+  function pn(){
+    if(!bkMusicOn)return;
+    const f=bkNotes[bkNoteIdx%bkNotes.length];bkNoteIdx++;
+    try{const c=getAC(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.value=f;const t=c.currentTime;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.08,t+0.1);g.gain.exponentialRampToValueAtTime(0.001,t+0.75);o.start(t);o.stop(t+0.8);}catch(e){}
+  }
+  pn();bkMusicInt=setInterval(pn,420);
+}
+function stopBkMusic(){bkMusicOn=false;if(bkMusicInt){clearInterval(bkMusicInt);bkMusicInt=null;}}
+
+/* ═══════════════════════════════════════
+   GOOGLE SHEETS CONFIG
+   → 
+═══════════════════════════════════════ */
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyRGEjIRbv212qBQDLgBWPlzzs7amHMEoxAKKiVa1zwNfrYnEJaS_HBYkdwT1ETiC2e/exec';
+
+let studentDB = []; // [{name,nick,branch,year,sid,score,level,finishedAt,sthScores}]
+
+// ══════════════════════════════════════════════════════
+// loadFromSheet — ใช้ JSONP (script tag) หลีกเลี่ยง CORS
+// saveToSheet   — ใช้ GET params ผ่าน script tag เช่นกัน
+// Apps Script ต้องอัพเดตให้รองรับ action=post และ callback
+// ══════════════════════════════════════════════════════
+
+function loadFromSheet(){
+  return new Promise(function(resolve){
+    var cb = 'cb_' + Date.now();
+    var done = false;
+
+    // timeout 12 วิ กันค้าง
+    var timer = setTimeout(function(){
+      if(done) return;
+      done = true;
+      try{ delete window[cb]; }catch(e){}
+      var s = document.getElementById(cb);
+      if(s) s.parentNode.removeChild(s);
+      console.warn('loadFromSheet timeout');
+      resolve();
+    }, 12000);
+
+    window[cb] = function(data){
+      if(done) return;
+      done = true;
+      clearTimeout(timer);
+      try{ delete window[cb]; }catch(e){}
+      var s = document.getElementById(cb);
+      if(s) s.parentNode.removeChild(s);
+      try{
+        studentDB = data
+          .filter(function(r){ return r.name; })
+          .map(function(r){
+            return {
+              name: r.name, nick: r.nick, branch: r.branch,
+              year: r.year, sid: r.sid,
+              score: Number(r.score), level: r.level,
+              finishedAt: new Date(r.timestamp).getTime() || Date.now(),
+              sthScores: {
+                1:Number(r.sth1), 2:Number(r.sth2), 3:Number(r.sth3), 4:Number(r.sth4),
+                5:Number(r.sth5), 6:Number(r.sth6), 7:Number(r.sth7), 8:Number(r.sth8)
+              }
+            };
+          });
+        console.log('loadFromSheet OK — records:', studentDB.length);
+      } catch(e){
+        console.error('loadFromSheet parse error:', e);
+      }
+      resolve();
+    };
+
+    var script = document.createElement('script');
+    script.id  = cb;
+    script.src = GAS_URL + '?callback=' + cb + '&t=' + Date.now();
+    script.onerror = function(){
+      if(done) return;
+      done = true;
+      clearTimeout(timer);
+      try{ delete window[cb]; }catch(e){}
+      if(script.parentNode) script.parentNode.removeChild(script);
+      console.error('loadFromSheet script error');
+      resolve();
+    };
+    document.head.appendChild(script);
+  });
+}
+
+function saveToSheet(record){
+  try{
+    // ส่งข้อมูลผ่าน GET params ใน script tag (ไม่มี CORS)
+    var p = new URLSearchParams({
+      action: 'post',
+      name:   record.name,
+      nick:   record.nick,
+      branch: record.branch,
+      year:   record.year,
+      sid:    record.sid,
+      score:  String(record.score),
+      level:  record.level,
+      sth1:   String(record.sthScores[1]),
+      sth2:   String(record.sthScores[2]),
+      sth3:   String(record.sthScores[3]),
+      sth4:   String(record.sthScores[4]),
+      sth5:   String(record.sthScores[5]),
+      sth6:   String(record.sthScores[6]),
+      sth7:   String(record.sthScores[7]),
+      sth8:   String(record.sthScores[8])
+    });
+    var script = document.createElement('script');
+    script.src = GAS_URL + '?' + p.toString();
+    script.onload = script.onerror = function(){
+      if(script.parentNode) script.parentNode.removeChild(script);
+    };
+    document.head.appendChild(script);
+    console.log('saveToSheet fired');
+  } catch(err){
+    console.error('saveToSheet error:', err);
+  }
+}
+
+/* ═══════════════════════════════════════
+   QUIZ DATA
+═══════════════════════════════════════ */
+const situations=[
+  {id:1,label:'ชุดที่ 1 | ข้อ 1–8 | โครงการกาแฟสีเขียว',title:'สถานการณ์ชุดที่ 1 — "โครงการกาแฟสีเขียว"',
+   body:`มหาวิทยาลัยแห่งหนึ่งตั้งเป้าหมาย Carbon Neutrality โดยออกนโยบาย 2 มาตรการ\n\n<b>► มาตรการลด:</b> ให้ส่วนลด 50% แก่ผู้นำแก้วส่วนตัวมาซื้อกาแฟ\n\n<b>► มาตรการชดเชย:</b> นำกำไรบางส่วนไปปลูกต้นไม้เป็น Carbon Sink\n\nผลในระยะแรกดูดี แต่เมื่อเวลาผ่านไป ปริมาณการบริโภคกาแฟรวมกลับ<b>เพิ่มขึ้นมาก</b> เพราะราคาที่ถูกลงและภาพลักษณ์สีเขียวกระตุ้นให้คนซื้อบ่อยขึ้น\n\n<b>คาร์บอนสุทธิจึงไม่ลดลงตามเป้าหมาย</b>`},
+  {id:2,label:'ชุดที่ 2 | ข้อ 9–16 | ระบบจัดการขยะ',title:'สถานการณ์ชุดที่ 2 — "ระบบการจัดการขยะในมหาวิทยาลัย"',
+   body:`มหาวิทยาลัยมีขยะรวมวันละ 2 ตัน แบ่งเป็น ขยะอินทรีย์ 60% / ขยะรีไซเคิล 25% / ขยะทั่วไป 15%\n\nปัจจุบันทุกประเภทถูกรวมในถังเดียวและส่งไปฝังกลบ ทำให้\n\n<b>► ขยะอินทรีย์</b>ย่อยสลายแบบไร้ออกซิเจน ปล่อยก๊าซมีเทน (CH₄) ซึ่งมีค่า GWP สูงกว่า CO₂ ถึง <b>25 เท่า</b>\n\n<b>► วัสดุรีไซเคิล</b>ที่ปนเปื้อนไม่สามารถนำกลับมาใช้ได้\n\nมหาวิทยาลัยกำลังพิจารณานโยบายใหม่: แยกขยะอินทรีย์ไปหมักเป็นปุ๋ย (Composting) และส่งวัสดุรีไซเคิลเข้าโรงงานแปรรูป เพื่อลด Carbon Footprint โดยรวม`},
+  {id:3,label:'ชุดที่ 3 | ข้อ 17–24 | ระบบตลาดคาร์บอน',title:'สถานการณ์ชุดที่ 3 — "ระบบตลาดคาร์บอนและ Net Zero ระดับชาติ"',
+   body:`ประเทศ X ประกาศเป้าหมาย Net Zero ภายในปี 2050 โดยมีนโยบาย 3 ด้านพร้อมกัน\n\n<b>► Carbon Tax:</b> เก็บภาษีการปล่อย CO₂ จากอุตสาหกรรม <b>30 USD/ตัน</b>\n\n<b>► Carbon Credit Market:</b> อนุญาตให้ซื้อขายเครดิตจากโครงการลดคาร์บอน\n\n<b>► Reforestation Fund:</b> กองทุนปลูกป่า 1 ล้านไร่ใน 10 ปี\n\n<b>ผลที่เกิดขึ้นจริง:</b> อุตสาหกรรมขนาดใหญ่ซื้อเครดิตจากต่างประเทศราคาถูกแทนการปรับตัว กองทุนปลูกป่ามีอัตรารอดตาย 40% เพราะขาดการดูแลต่อเนื่อง และราคา Carbon Tax <b>ยังต่ำเกินไป</b>ที่จะเปลี่ยนพฤติกรรมอุตสาหกรรม`},
+];
+
+const Q=[
+  {id:1,set:1,sth:1,text:'จากสถานการณ์โครงการกาแฟสีเขียว องค์ประกอบใดจัดอยู่ในกลุ่ม "ปัจจัยด้านสิ่งแวดล้อมและของเสีย" ได้ถูกต้องที่สุด',c:['เครื่องชงกาแฟ และ พลังงานไฟฟ้า','กากกาแฟ และ ปริมาณคาร์บอน','ส่วนลด 50% และ ภาพลักษณ์องค์กร','เมล็ดกาแฟ และ ปริมาณการซื้อ'],a:1,r:'กากกาแฟ = ของเสียจากกระบวนการ, ปริมาณคาร์บอน = ตัวแปรสิ่งแวดล้อม ทั้งสองอยู่ในกลุ่ม "สิ่งแวดล้อมและของเสีย"'},
+  {id:2,set:1,sth:2,text:'ความสัมพันธ์ระหว่าง "ภาพลักษณ์องค์กรสีเขียว" กับ "ปริมาณการซื้อกาแฟ" เป็นอย่างไร',c:['ความสัมพันธ์เชิงลบ (−) เพราะองค์กรสีเขียวทำให้คนรู้สึกผิดเมื่อซื้อกาแฟ','ความสัมพันธ์เชิงบวก (+) เพราะ Green Image กระตุ้นให้คนรู้สึกดีกับการบริโภคมากขึ้น','ไม่มีความสัมพันธ์กัน เพราะเป็นคนละมิติ','ความสัมพันธ์เชิงลบ (−) เพราะต้นไม้ดูดซับคาร์บอนได้เพิ่มขึ้น'],a:1,r:'Green Image ทำให้คนรู้สึกดีกับการซื้อ (Moral Licensing) → ซื้อมากขึ้น = ความสัมพันธ์ (+)'},
+  {id:3,set:1,sth:3,text:'เมื่อเวลาผ่านไปในโครงการนี้ ตัวแปรใดมีทิศทาง "เพิ่มขึ้น" ทั้งหมด',c:['ขยะพลาสติก, ปริมาณการซื้อ, คาร์บอนสุทธิ','ขยะพลาสติก, ปริมาณการซื้อ, ภาพลักษณ์องค์กร','ปริมาณการซื้อ, กากกาแฟ, คาร์บอนสุทธิ','ขยะพลาสติก, กากกาแฟ, ต้นไม้ที่ปลูก'],a:2,r:'ปริมาณการซื้อ, กากกาแฟ, คาร์บอนสุทธิ ล้วนเพิ่มขึ้นเพราะ Rebound Effect — ขยะพลาสติกลดลงเพราะใช้แก้วส่วนตัว'},
+  {id:4,set:1,sth:4,text:'วงจรที่เกิดจากเส้นทาง "ส่วนลด 50% → แรงจูงใจบริโภค → ปริมาณการซื้อ → คาร์บอนสุทธิ → ส่วนลด" เป็นวงจรประเภทใด',c:['Balancing Loop (B) เพราะมีเครื่องหมายลบ 1 ตัว ทำให้ระบบสมดุล','Reinforcing Loop (R) เพราะทุกความสัมพันธ์เป็นบวก วงจรเสริมแรงตัวเอง','Balancing Loop (B) เพราะส่วนลดทำให้ขยะลดลง','Reinforcing Loop (R) เพราะต้นไม้ดูดซับคาร์บอนมากขึ้นเรื่อยๆ'],a:1,r:'ทุกความสัมพันธ์เป็น (+) ไม่มีเครื่องหมาย (−) = Reinforcing Loop วงจรเสริมแรงตัวเองให้บริโภคมากขึ้นเรื่อยๆ'},
+  {id:5,set:1,sth:5,text:'หากมหาวิทยาลัยหยุดนำกากกาแฟไปหมักเป็นปุ๋ยบำรุงต้นไม้ Carbon Sink ระบบจะเปลี่ยนแปลงอย่างไร',c:['วงจรปิดยังคงทำงานได้เพราะต้นไม้โตจากน้ำฝนได้เอง','วงจรขาด ณ จุดนั้น ต้นไม้โตช้าลง Carbon Sink ลด คาร์บอนสะสมในบรรยากาศมากขึ้น','ปริมาณกากกาแฟในระบบจะสะสมและกลายเป็น Carbon Sink ใหม่','คาร์บอนที่ปล่อยจากกาแฟจะลดลงเพราะไม่มีปุ๋ยให้ต้นกาแฟโต'],a:1,r:'ตัดการเชื่อมโยง กากกาแฟ→ปุ๋ย→ต้นไม้ ทำให้วงจรขาด ระบบกลับเป็นเส้นตรง Carbon Sink ลด คาร์บอนในบรรยากาศเพิ่ม'},
+  {id:6,set:1,sth:6,text:'หลักการที่พบในโครงการกาแฟสีเขียว (ส่วนลด→บริโภคมาก→ผลตรงข้ามเจตนา) สามารถอธิบายสถานการณ์ใดได้ดีที่สุด',c:['โรงพยาบาลซื้อยามากขึ้นเพราะราคายาขึ้น','โรงอาหารแจกคูปองฟรีเมื่อกินหมดจาน ทำให้นักศึกษามากินถี่ขึ้น วัตถุดิบ+แก๊สเพิ่ม ขยะรวมสูงขึ้น','มหาวิทยาลัยปลูกต้นไม้เพิ่มเพื่อลดคาร์บอน','ร้านค้าลดราคาสินค้าช่วงเทศกาลเพื่อกระตุ้นยอดขาย'],a:1,r:'โครงสร้างเดียวกัน: แรงจูงใจลดต้นทุนต่อหน่วย → ปริมาณรวมเพิ่ม → ผลสุทธิตรงข้ามเจตนา'},
+  {id:7,set:1,sth:7,text:'ปีที่ 1 ขยะพลาสติกลด 40% ดูเหมือนสำเร็จ แต่คาร์บอนที่ปล่อยเพิ่ม 25% และต้นไม้ดูดซับได้เพียง 2% ของคาร์บอนที่ปล่อย สิ่งใดคือ "มิติซ่อนเร้น" ที่ผู้บริหารมักมองข้าม',c:['จำนวนแก้วส่วนตัวที่นักศึกษานำมา','ช่องว่างที่ขยายตัวระหว่างคาร์บอนที่ปล่อย (เพิ่มเร็ว) กับที่ดูดซับ (เพิ่มช้า) เพราะต้นไม้ต้องรออีก 8–10 ปี','ราคากาแฟที่ขายได้ต่อแก้ว','ความพึงพอใจของนักศึกษาต่อรสชาติกาแฟ'],a:1,r:'Time Delay ของต้นไม้ (8–10 ปี) ซ่อนช่องว่างที่ขยายตัว ผู้บริหารมองเห็นแต่ขยะลด แต่ไม่เห็นคาร์บอนสะสมเพิ่ม'},
+  {id:8,set:1,sth:8,text:'หากมหาวิทยาลัยเปลี่ยนจากส่วนลด 50% ทุกแก้ว เป็นโควต้า 5 แก้ว/สัปดาห์ ผลที่คาดในระยะสั้น (ปีที่ 1) และระยะยาว (ปีที่ 5) จะต่างกันอย่างไร',c:['ระยะสั้น: ดีขึ้นทันที / ระยะยาว: ดีขึ้นต่อเนื่องเท่าๆ กัน','ระยะสั้น: ยอดขายลด นักศึกษาไม่พอใจ / ระยะยาว: R Loop อ่อนแรงลง คาร์บอนสุทธิมีแนวโน้มสมดุล','ระยะสั้น: คาร์บอนเป็นศูนย์ทันที / ระยะยาว: ต้นไม้โตเต็มที่','ระยะสั้น: ไม่มีการเปลี่ยนแปลง / ระยะยาว: คาร์บอนสุทธิเพิ่มขึ้น'],a:1,r:'ระยะสั้นยอดขายลด (R Loop อ่อนแรง) ระยะยาว B Loop เริ่มทำงานได้จริง — ผลต่างกันเพราะระบบใช้เวลาปรับตัว'},
+  {id:9,set:2,sth:1,text:'"ก๊าซมีเทน (CH₄)" และ "โรงงานแปรรูปวัสดุรีไซเคิล" ควรจัดอยู่ในกลุ่มองค์ประกอบใดตามลำดับ',c:['แหล่งดูดซับคาร์บอน — แหล่งปล่อยคาร์บอน','แหล่งปล่อยก๊าซเรือนกระจก — แหล่งลดการปล่อย','แหล่งสะสมพลังงาน — แหล่งดูดซับคาร์บอน','ของเสียอันตราย — แหล่งปล่อยคาร์บอน'],a:1,r:'CH₄ = แหล่งปล่อยก๊าซเรือนกระจก, โรงงานรีไซเคิล = แหล่งลดการปล่อย (ลดการผลิตใหม่จากวัตถุดิบ)'},
+  {id:10,set:2,sth:2,text:'ความสัมพันธ์ระหว่าง "ปริมาณขยะอินทรีย์ที่ฝังกลบ" กับ "ปริมาณก๊าซมีเทนในบรรยากาศ" เป็นอย่างไร',c:['ความสัมพันธ์เชิงลบ (−) เพราะดินช่วยดูดซับมีเทนในระหว่างการฝังกลบ','ความสัมพันธ์เชิงบวก (+) เพราะขยะอินทรีย์ย่อยสลายไร้ออกซิเจนปล่อยมีเทนเพิ่มขึ้น','ไม่มีความสัมพันธ์ เพราะมีเทนระเหยหายไปก่อนถึงบรรยากาศ','ความสัมพันธ์เชิงบวก (+) เพราะมีเทนช่วยเร่งการย่อยสลายขยะ'],a:1,r:'ขยะอินทรีย์ฝังกลบย่อยสลายไร้ออกซิเจน → ปล่อยมีเทนเพิ่ม = ความสัมพันธ์ (+)'},
+  {id:11,set:2,sth:3,text:'หากเพิ่มโปรแกรม Composting ขยะอินทรีย์ 60% ทิศทางพลวัตของ "ปริมาณมีเทนที่ปล่อย" และ "คุณภาพดินในมหาวิทยาลัย" จะเป็นอย่างไร',c:['มีเทนเพิ่มขึ้น / คุณภาพดินลดลง','มีเทนลดลง / คุณภาพดินเพิ่มขึ้น','มีเทนลดลง / คุณภาพดินลดลง','มีเทนเพิ่มขึ้น / คุณภาพดินเพิ่มขึ้น'],a:1,r:'Composting เปลี่ยนการย่อยสลายจากแบบไร้ออกซิเจน→มีออกซิเจน มีเทนลด + ปุ๋ยช่วยดินดี'},
+  {id:12,set:2,sth:4,text:'ระบุประเภทของวงจรป้อนกลับ: "ขยะอินทรีย์ฝังกลบเพิ่ม → มีเทนเพิ่ม → โลกร้อนขึ้น → พฤติกรรมบริโภคไม่เปลี่ยน → ขยะอินทรีย์ฝังกลบยิ่งเพิ่ม"',c:['Balancing Loop เพราะโลกร้อนทำให้คนตื่นตัวและลดขยะ','Reinforcing Loop เพราะทุกองค์ประกอบเสริมแรงกันไปในทิศทางเดิมโดยไม่มีแรงต้าน','Balancing Loop เพราะมีเทนในที่สุดจะสลายตัวเองในบรรยากาศ','Reinforcing Loop เพราะปุ๋ยที่หมักได้ช่วยปลูกต้นไม้ดูดซับมีเทนกลับ'],a:1,r:'ไม่มีเครื่องหมาย (−) ในวงจร ทุกส่วนเสริมแรงกันให้ขยะฝังกลบและมีเทนเพิ่มต่อไป = Reinforcing Loop'},
+  {id:13,set:2,sth:5,text:'ระบบ Composting เปลี่ยน "กากอาหาร → ปุ๋ย → บำรุงต้นไม้ → ดูดซับ CO₂ → กากอาหารใหม่" เป็นวงจรปิด หากยกเลิกการนำปุ๋ยกลับมาใช้ในสวน ระบบจะเปลี่ยนอย่างไร',c:['วงจรยังคงทำงานได้เพราะต้นไม้ดูดน้ำจากฝนแทน','วงจรขาดที่จุดเชื่อมปุ๋ย→ต้นไม้ ระบบกลับเป็นเส้นตรง ต้นไม้โตช้า Carbon Sink ลดลง','ปุ๋ยที่เหลือจะสะสมกลายเป็นแหล่งดูดซับคาร์บอนใหม่','คาร์บอนที่ปล่อยจากการย่อยขยะจะลดลงเพราะไม่มีกิจกรรมเพิ่ม'],a:1,r:'ตัดจุดเชื่อมปุ๋ย→ต้นไม้ วงจรปิดขาด Cascade: ต้นไม้ไม่โต → Sink ลด → CO₂ เพิ่ม'},
+  {id:14,set:2,sth:6,text:'หลักการที่พบในระบบขยะนี้ (แยกขยะ→ลดมีเทน→ลดคาร์บอน) สามารถนำไปอธิบายสถานการณ์ใดได้ดีที่สุด โดยมี "โครงสร้างเดียวกัน"',c:['การลดการใช้รถยนต์ส่วนตัวโดยใช้ระบบขนส่งมวลชน ทำให้คาร์บอนต่อหัวลดลง','การแยกเส้นทางการไหลของทรัพยากร (Resource Stream) เพื่อลดผลกระทบปลายทาง เช่น แยกน้ำเสียโรงงาน→บำบัด→ลดมลพิษในแม่น้ำ','การปลูกต้นไม้เพิ่มจำนวนในเมืองเพื่อดูดซับ CO₂','การซื้อคาร์บอนเครดิตชดเชยการปล่อยของโรงงาน'],a:1,r:'โครงสร้างเดียวกัน: แยก Resource Stream → ลดผลกระทบปลายทาง (ขยะ/น้ำเสีย) แม้บริบทต่างกัน'},
+  {id:15,set:2,sth:7,text:'ปีแรกหลังเริ่ม Composting ขยะฝังกลบลดลง 55% แต่มีเทนในบรรยากาศยังสูงอยู่ "สิ่งใดคือมิติซ่อนเร้น"',c:['จำนวนนักศึกษาที่เข้าร่วมโครงการยังน้อยเกินไป','มีเทนที่สะสมอยู่ในหลุมฝังกลบเดิม (ก่อนเริ่มโครงการ) ยังคงปล่อยต่อเนื่อง ต้องใช้เวลาหลายปีกว่าจะลดได้ (Time Delay)','โรงงานรีไซเคิลยังประมวลผลวัสดุได้ไม่ทัน','คุณภาพปุ๋ยยังไม่ได้มาตรฐาน'],a:1,r:'มีเทนจากหลุมฝังกลบเดิมยังคงปล่อยต่อหลายปี = Hidden Time Delay ที่ซ่อนอยู่ในระบบเก่าก่อนโครงการ'},
+  {id:16,set:2,sth:8,text:'หากลงทุนระบบ Composting วันนี้ การคาดการณ์ผลในระยะสั้น (ปีที่ 1–2) และระยะยาว (ปีที่ 5+) ข้อใดถูกต้องที่สุด',c:['ระยะสั้น: มีเทนเป็นศูนย์ทันที / ระยะยาว: ระบบสมบูรณ์แบบ','ระยะสั้น: มีเทนลดลงบางส่วนแต่ยังสูงจากหลุมเดิม ต้นทุนระบบสูง / ระยะยาว: มีเทนลดต่อเนื่อง ปุ๋ยเพิ่ม Carbon Sink แข็งแกร่งขึ้น','ระยะสั้น: ทุกอย่างดีขึ้นเท่ากัน / ระยะยาว: ไม่มีการเปลี่ยนแปลง','ระยะสั้น: ต้นทุนสูง ผลลัพธ์ไม่ชัด / ระยะยาว: ระบบยิ่งแย่ลงเพราะขยะเพิ่ม'],a:1,r:'ระยะสั้น: มีเทนเก่ายังออก ต้นทุนสูง — ระยะยาว: มีเทนลดต่อเนื่อง ปุ๋ยเพิ่ม Sink แข็งแกร่ง พลวัตต่างกันตามเวลา'},
+  {id:17,set:3,sth:1,text:'"Carbon Tax" และ "กองทุนปลูกป่า" ควรจัดอยู่ในกลุ่มองค์ประกอบของระบบ Net Zero ประเภทใดตามลำดับ',c:['แหล่งดูดซับ — แหล่งปล่อย','เครื่องมือลดการปล่อย — เครื่องมือเพิ่ม Carbon Sink','แรงจูงใจทางการเงิน — แรงจูงใจทางสังคม','นโยบายบังคับ — นโยบายสมัครใจ'],a:1,r:'Carbon Tax = เครื่องมือลดการปล่อย (สัญญาณราคา), กองทุนปลูกป่า = เครื่องมือเพิ่ม Carbon Sink'},
+  {id:18,set:3,sth:2,text:'ความสัมพันธ์ระหว่าง "ราคา Carbon Tax" กับ "แรงจูงใจปรับเปลี่ยนเทคโนโลยีของอุตสาหกรรม" เป็นอย่างไรในบริบทนี้',c:['ความสัมพันธ์เชิงลบ (−) เสมอ เพราะภาษีสร้างภาระทางการเงิน','ความสัมพันธ์เชิงบวก (+) เพราะราคาภาษีสูงขึ้น → ต้นทุนการปล่อยสูง → แรงจูงใจเปลี่ยนเทคโนโลยีมากขึ้น แต่ในปัจจุบันราคาต่ำเกินไปจึงยังไม่เกิดผล','ไม่มีความสัมพันธ์ เพราะอุตสาหกรรมตัดสินใจจากตลาดเท่านั้น','ความสัมพันธ์เชิงลบ (−) เพราะอุตสาหกรรมใหญ่มีอำนาจต่อรองสูงกว่ารัฐบาล'],a:1,r:'ราคา Tax สูง → ต้นทุนปล่อยสูง → แรงจูงใจเปลี่ยนเทคโนโลยีมาก = (+) แต่ราคาปัจจุบันต่ำเกินไปจึงยังไม่เกิดผล'},
+  {id:19,set:3,sth:3,text:'ในระยะ 5 ปีแรก ตัวแปรใดมีทิศทาง "ลดลง" จริงๆ แม้นโยบายทั้ง 3 จะเริ่มใช้แล้ว',c:['ปริมาณ CO₂ สุทธิที่ประเทศ X ปล่อยสู่บรรยากาศ','ปริมาณเครดิตที่ซื้อจากต่างประเทศ','จำนวนต้นไม้ที่รอดตาย (เพราะอัตรารอดตายเพียง 40%)','ราคา Carbon Tax ที่เก็บจากอุตสาหกรรม'],a:2,r:'ต้นไม้รอดตาย 40% จาก 100% = จำนวนต้นไม้จริงลดลง ส่วนตัวแปรอื่นยังไม่ลดตามที่นโยบายตั้งใจ'},
+  {id:20,set:3,sth:4,text:'วงจรป้อนกลับประเภทใดที่อธิบาย: "Carbon Tax ต่ำ → อุตสาหกรรมซื้อเครดิตราคาถูกแทน → ไม่มีแรงกดดันเปลี่ยนเทคโนโลยี → การปล่อย CO₂ ยังสูง → รัฐไม่กล้าขึ้น Tax → Carbon Tax ยังต่ำ"',c:['Balancing Loop เพราะตลาดคาร์บอนจะดึงระบบสู่สมดุลในที่สุด','Reinforcing Loop เพราะวงจรล็อกตัวเองให้ Carbon Tax อยู่ในระดับต่ำ ไม่มีแรงต้านจากภายในวงจร','Balancing Loop เพราะราคาเครดิตจะสูงขึ้นเองเมื่อความต้องการสูง','Reinforcing Loop เพราะปริมาณ CO₂ ที่เพิ่มทำให้โลกร้อนขึ้นและกระตุ้นให้รัฐขึ้น Tax'],a:1,r:'วงจรล็อกตัวเอง: Tax ต่ำ→ซื้อเครดิต→ไม่เปลี่ยน→CO₂ สูง→ไม่กล้าขึ้น Tax→Tax ต่ำ ไม่มีแรงต้านภายใน = Reinforcing Loop'},
+  {id:21,set:3,sth:5,text:'หากกองทุนปลูกป่าเป็น Closed Loop: "รายได้ Carbon Tax → ปลูกป่า → ขายเครดิต → รายได้กลับกองทุน → ปลูกป่าเพิ่ม" แต่รัฐนำรายได้ไปใช้ด้านอื่น วงจรจะเปลี่ยนอย่างไร',c:['วงจรยังคงทำงานได้เพราะป่าขายเครดิตได้เองโดยไม่ต้องพึ่งงบรัฐ','วงจรขาดที่จุด Tax→กองทุน ป่าขยายตัวได้น้อยลง เครดิตลด รายได้กลับกองทุนลด วงจรหดตัวลงเรื่อยๆ (Cascade)','ป่าที่ปลูกไว้แล้วยังดูดซับ CO₂ ได้เหมือนเดิมโดยไม่มีผลกระทบ','การตัดงบทำให้รัฐประหยัดเงินและนำไปซื้อเครดิตจากต่างประเทศแทนได้'],a:1,r:'ตัดจุด Tax→กองทุน วงจรปิดขาด Cascade: ป่าน้อยลง→เครดิตน้อย→รายได้น้อย→ป่าน้อยยิ่งลงไปอีก'},
+  {id:22,set:3,sth:6,text:'โครงสร้างของประเทศ X (นโยบายดีแต่ราคาสัญญาณต่ำเกินไปจนไม่เปลี่ยนพฤติกรรม) สามารถนำไปอธิบายสถานการณ์ใดได้ดีที่สุด โดยมี "โครงสร้างเดียวกัน"',c:['เมืองตั้งป้ายรณรงค์ประหยัดน้ำแต่ไม่ขึ้นราคาน้ำ ทำให้การบริโภคน้ำไม่เปลี่ยน เพราะสัญญาณราคาไม่แรงพอ','รัฐบาลเพิ่มงบสวัสดิการสุขภาพเพื่อลดค่าใช้จ่ายประชาชน','มหาวิทยาลัยเพิ่มทุนการศึกษาเพื่อดึงดูดนักเรียนเก่ง','โรงงานติดตั้งระบบกรองอากาศเพื่อลดมลพิษในโรงงาน'],a:0,r:'โครงสร้างเดียวกัน: สัญญาณราคาต่ำเกินไปจึงไม่เปลี่ยนพฤติกรรม แม้มีนโยบายอยู่แล้ว (น้ำ vs คาร์บอน)'},
+  {id:23,set:3,sth:7,text:'ปี 2030 ประเทศ X ประกาศว่าปล่อย CO₂ ลด 20% (สำเร็จตามเป้า) แต่นักวิทยาศาสตร์พบว่าคาร์บอนในบรรยากาศของประเทศยังเพิ่มขึ้น มิติซ่อนเร้นใดอธิบายความขัดแย้งนี้',c:['ตัวเลขที่รายงานนับเฉพาะการปล่อยในประเทศ แต่ไม่นับคาร์บอนจากสินค้านำเข้าและป่าที่ยังเสื่อมโทรมต่อเนื่องจากอดีต','ประชาชนไม่ยอมรับรายงานของรัฐบาล','เครื่องวัดคาร์บอนในบรรยากาศมีความคลาดเคลื่อนสูง','การลดลง 20% ยังไม่พอที่จะเห็นผลในบรรยากาศ เพราะต้องรอ 100 ปี'],a:0,r:'Hidden Dimension: Carbon Accounting ไม่นับ Scope 3 (สินค้านำเข้า) + Legacy Carbon จากป่าเสื่อมโทรมเก่า ทำให้ตัวเลขรายงานต่ำกว่าความจริง'},
+  {id:24,set:3,sth:8,text:'หากประเทศ X ขึ้น Carbon Tax เป็น 100 USD/ตัน (จากปัจจุบัน 30 USD/ตัน) การคาดการณ์ผลในระยะสั้น (1–3 ปี) และระยะยาว (10 ปีขึ้นไป) ข้อใดสะท้อน Temporal Thinking ที่ถูกต้องที่สุด',c:['ระยะสั้น: อุตสาหกรรมลดการปล่อยทันที / ระยะยาว: Net Zero สำเร็จ','ระยะสั้น: อุตสาหกรรมต้นทุนสูงขึ้น บางส่วนชะลอการลงทุน เศรษฐกิจอาจชะลอ / ระยะยาว: แรงกดดันราคาทำให้เกิดนวัตกรรมพลังงานสะอาด R Loop ใหม่ดันระบบสู่ Net Zero','ระยะสั้น: ไม่มีผลกระทบ / ระยะยาว: อุตสาหกรรมทั้งหมดย้ายออกนอกประเทศ','ระยะสั้น: เศรษฐกิจพังทลาย / ระยะยาว: ฟื้นตัวและ Net Zero สำเร็จโดยอัตโนมัติ'],a:1,r:'ระยะสั้น: ต้นทุนสูง เศรษฐกิจชะลอ (ผลทันที) — ระยะยาว: แรงกดดันราคาสร้าง R Loop ใหม่ → นวัตกรรมพลังงานสะอาด พลวัตเชิงเวลาที่ซับซ้อน'},
+];
+
+const LEVELS=[
+  {min:21,max:24,cls:'lv-master',pillCls:'pill-master',badge:'🏆 MASTER — ระดับสูงสุด',title:'นักคิดเชิงระบบขั้นสูง',shortLabel:'MASTER',
+   desc:'คุณมีความเข้าใจ Systems Thinking อย่างลึกซึ้ง สามารถวิเคราะห์ Feedback Loop, Time Delay, Hidden Dimension และ Temporal Thinking ได้อย่างชำนาญ พร้อมประยุกต์ใช้ข้ามบริบทได้อย่างแม่นยำ',
+   tips:'💡 ต่อยอด: สร้าง Causal Loop Diagram ของระบบจริง · ศึกษา System Archetypes · ฝึกใช้เครื่องมือ Vensim หรือ Kumu'},
+  {min:17,max:20,cls:'lv-advanced',pillCls:'pill-advanced',badge:'⭐ ADVANCED — ระดับเชี่ยวชาญ',title:'ผู้เชี่ยวชาญด้านระบบ',shortLabel:'ADVANCED',
+   desc:'คุณมีทักษะการคิดเชิงระบบที่แข็งแกร่ง เข้าใจโครงสร้างและพลวัตของระบบได้ดี สามารถระบุ Reinforcing/Balancing Loop และวิเคราะห์ผลกระทบระยะยาวได้ครบถ้วน',
+   tips:'💡 พัฒนาต่อ: เน้นทบทวน STH ขั้น 7–8 (Hidden Dimension & Temporal Thinking) ให้ลึกขึ้น'},
+  {min:12,max:16,cls:'lv-inter',pillCls:'pill-inter',badge:'📘 INTERMEDIATE — กำลังพัฒนา',title:'กำลังพัฒนาการคิดเชิงระบบ',shortLabel:'INTERMEDIATE',
+   desc:'คุณมีพื้นฐานที่ดีในการระบุองค์ประกอบและความสัมพันธ์ของระบบ แต่ยังมีโอกาสพัฒนาในด้านการวิเคราะห์วงจรป้อนกลับและการมองเห็นมิติซ่อนเร้น',
+   tips:'💡 แนะนำ: ทบทวน Feedback Loop (ขั้น 4–5) · ฝึกวิเคราะห์ Rebound Effect · อ่านเพิ่มเติมเรื่อง Time Delay'},
+  {min:0,max:11,cls:'lv-basic',pillCls:'pill-basic',badge:'🌱 BEGINNER — จุดเริ่มต้น',title:'เริ่มต้นการเดินทางเชิงระบบ',shortLabel:'BEGINNER',
+   desc:'นี่คือจุดเริ่มต้นที่ดี! Systems Thinking เป็นทักษะที่ต้องฝึกฝน การทำแบบทดสอบนี้คือก้าวแรกที่สำคัญในการพัฒนาการมองโลกแบบเชิงระบบ',
+   tips:'💡 แนะนำ: เริ่มจากการระบุ Stock & Flow ในชีวิตประจำวัน · อ่านหนังสือ "Thinking in Systems" โดย Donella Meadows'},
+];
+
+/* ═══════════════════════════════════════
+   STATE
+═══════════════════════════════════════ */
+let curIdx=0,ans=new Array(Q.length).fill(null),breakDone=false;
+let bkTimer=null,bkCount=10;
+let currentStudent=null; // filled on startQuiz
+
+/* ═══════════════════════════════════════
+   PARTICLES
+═══════════════════════════════════════ */
+function initParticles(id){
+  const c=document.getElementById(id);
+  if(!c)return;
+  const cols=['#3fb950','#58a6ff','#d2a679','#f78166'];
+  for(let i=0;i<14;i++){
+    const s=document.createElement('span');
+    const sz=Math.random()*50+16;
+    s.style.cssText=`width:${sz}px;height:${sz}px;background:${cols[i%4]};left:${Math.random()*100}%;animation-duration:${Math.random()*10+8}s;animation-delay:${Math.random()*7}s;`;
+    c.appendChild(s);
+  }
+}
+
+/* ═══════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════ */
+function goToReg(){
+  document.getElementById('cover-screen').style.display='none';
+  document.getElementById('reg-screen').classList.add('show');
+}
+
+function checkForm(){
+  const name=document.getElementById('f-name').value.trim();
+  const nick=document.getElementById('f-nick').value.trim();
+  const branch=document.getElementById('f-branch').value.trim();
+  const year=document.getElementById('f-year').value;
+  const sid=document.getElementById('f-id').value.trim();
+  const ok=name&&nick&&branch&&year&&sid;
+  const btn=document.getElementById('regNextBtn');
+  btn.classList.toggle('show',ok);
+}
+
+function startQuiz(){
+  const name=document.getElementById('f-name').value.trim();
+  const nick=document.getElementById('f-nick').value.trim();
+  const branch=document.getElementById('f-branch').value.trim();
+  const year=document.getElementById('f-year').value;
+  const sid=document.getElementById('f-id').value.trim();
+
+  // Validate again
+  const fields=['f-name','f-nick','f-branch','f-id'];
+  const selects=['f-year'];
+  let missing=false;
+  fields.forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el.value.trim()){el.classList.add('error');missing=true;}else el.classList.remove('error');
+  });
+  selects.forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el.value){el.classList.add('error');missing=true;}else el.classList.remove('error');
+  });
+
+  if(missing){
+    document.getElementById('regError').classList.add('show');
+    playError();
+    setTimeout(()=>document.getElementById('regError').classList.remove('show'),3000);
+    return;
+  }
+
+  currentStudent={name,nick,branch,year,sid,startedAt:Date.now()};
+  try{getAC().resume();}catch(e){}
+  document.getElementById('reg-screen').classList.remove('show');
+  document.getElementById('quiz-screen').classList.add('active');
+  document.getElementById('quizMetaName').textContent=`${nick} (${branch}) · 24 ข้อ`;
+  renderAll();
+}
+
+/* ═══════════════════════════════════════
+   ADMIN
+═══════════════════════════════════════ */
+function openAdminModal(){
+  document.getElementById('adminPwInput').value='';
+  document.getElementById('adminPwErr').textContent='';
+  document.getElementById('adminPwInput').classList.remove('error');
+  document.getElementById('admin-modal').classList.add('show');
+  setTimeout(()=>document.getElementById('adminPwInput').focus(),100);
+}
+function closeAdminModal(){document.getElementById('admin-modal').classList.remove('show');}
+function clearPwError(){
+  document.getElementById('adminPwErr').textContent='';
+  document.getElementById('adminPwInput').classList.remove('error');
+}
+function checkAdminPw(){
+  const pw=document.getElementById('adminPwInput').value.trim();
+  if(pw==='1234'||pw==='0000'){
+    closeAdminModal();
+    showAdminDashboard();
+  } else {
+    document.getElementById('adminPwErr').textContent='รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่';
+    document.getElementById('adminPwInput').classList.add('error');
+    playError();
+  }
+}
+function exitAdmin(){
+  document.getElementById('admin-screen').classList.remove('show');
+  // go back to cover
+  document.getElementById('cover-screen').style.display='flex';
+  document.getElementById('reg-screen').classList.remove('show');
+  document.getElementById('quiz-screen').classList.remove('active');
+  document.getElementById('summary-screen').classList.remove('show');
+}
+
+/* ═══════════════════════════════════════
+   EXPORT FUNCTIONS
+═══════════════════════════════════════ */
+function openExportModal(){
+  if(!studentDB||studentDB.length===0){
+    alert('ยังไม่มีข้อมูลผู้ทำแบบทดสอบ');return;
+  }
+  // Populate branch filter
+  const branches=[...new Set(studentDB.map(s=>s.branch))].sort();
+  const branchSel=document.getElementById('exportBranchFilter');
+  branchSel.innerHTML='<option value="">ทุกสาขาวิชา</option>';
+  branches.forEach(b=>{
+    const o=document.createElement('option');o.value=b;o.textContent=b;branchSel.appendChild(o);
+  });
+  document.getElementById('exportSearchInput').value='';
+  renderExportList();
+  document.getElementById('export-modal').classList.add('show');
+}
+
+function closeExportModal(){
+  document.getElementById('export-modal').classList.remove('show');
+}
+
+function renderExportList(){
+  const list=document.getElementById('exportList');
+  list.innerHTML='';
+  studentDB.forEach((s,i)=>{
+    const lv=getLevelForScore(s.score);
+    const item=document.createElement('div');
+    item.className='export-item';
+    item.dataset.idx=i;
+    item.dataset.name=s.name.toLowerCase();
+    item.dataset.nick=(s.nick||'').toLowerCase();
+    item.dataset.sid=(s.sid||'').toLowerCase();
+    item.dataset.branch=s.branch;
+    item.innerHTML=`
+      <input type="checkbox" class="export-cb" data-idx="${i}" onchange="updateExportCount()">
+      <div class="export-item-info">
+        <div class="export-item-name">${s.name} (${s.nick})</div>
+        <div class="export-item-meta">${s.branch} · ชั้นปี ${s.year} · รหัส ${s.sid}</div>
+      </div>
+      <div class="export-item-score" style="color:${scoreColor(s.score)}">${s.score}/24<br><span style="font-size:10px;font-weight:600;color:var(--text2)">${lv.shortLabel}</span></div>`;
+    item.addEventListener('click',function(e){
+      if(e.target.type==='checkbox')return;
+      const cb=this.querySelector('.export-cb');
+      cb.checked=!cb.checked;updateExportCount();
+    });
+    list.appendChild(item);
+  });
+  updateExportCount();
+}
+
+function filterExportList(){
+  const q=document.getElementById('exportSearchInput').value.toLowerCase().trim();
+  const br=document.getElementById('exportBranchFilter').value;
+  document.querySelectorAll('.export-item').forEach(item=>{
+    const matchSearch=!q||(item.dataset.name.includes(q)||item.dataset.nick.includes(q)||item.dataset.sid.includes(q));
+    const matchBranch=!br||item.dataset.branch===br;
+    item.classList.toggle('hidden',!(matchSearch&&matchBranch));
+  });
+  updateSelectAllState();
+  updateExportCount();
+}
+
+function toggleSelectAll(cb){
+  const visibleCbs=document.querySelectorAll('.export-item:not(.hidden) .export-cb');
+  visibleCbs.forEach(c=>c.checked=cb.checked);
+  updateExportCount();
+}
+
+function updateSelectAllState(){
+  const all=document.querySelectorAll('.export-item:not(.hidden) .export-cb');
+  const checked=document.querySelectorAll('.export-item:not(.hidden) .export-cb:checked');
+  const sa=document.getElementById('exportSelectAll');
+  sa.indeterminate=checked.length>0&&checked.length<all.length;
+  sa.checked=all.length>0&&checked.length===all.length;
+}
+
+function updateExportCount(){
+  const n=document.querySelectorAll('.export-cb:checked').length;
+  document.getElementById('exportSelectedCount').textContent=`เลือก ${n} คน`;
+  document.getElementById('exportDoBtn').disabled=n===0;
+  updateSelectAllState();
+}
+
+function doExport(){
+  const selectedIdxs=[...document.querySelectorAll('.export-cb:checked')].map(cb=>Number(cb.dataset.idx));
+  if(selectedIdxs.length===0)return;
+  const selected=selectedIdxs.map(i=>studentDB[i]);
+  const fmt=document.getElementById('exportFormat').value;
+  const ts=new Date().toISOString().slice(0,10);
+
+  if(fmt==='json'){
+    const out=selected.map(s=>({
+      name:s.name,nick:s.nick,branch:s.branch,year:s.year,sid:s.sid,
+      score:s.score,total:24,level:getLevelForScore(s.score).shortLabel,
+      sth1:s.sthScores[1],sth2:s.sthScores[2],sth3:s.sthScores[3],sth4:s.sthScores[4],
+      sth5:s.sthScores[5],sth6:s.sthScores[6],sth7:s.sthScores[7],sth8:s.sthScores[8],
+      finishedAt:s.finishedAt?new Date(s.finishedAt).toISOString():''
+    }));
+    downloadFile(`sth_export_${ts}.json`,JSON.stringify(out,null,2),'application/json');
+  } else {
+    const sep=fmt==='tsv'?'\t':',';
+    const q=fmt==='csv'?v=>`"${String(v).replace(/"/g,'""')}"`:v=>v;
+    const headers=['ลำดับ','ชื่อ-สกุล','ชื่อเล่น','สาขาวิชา','ชั้นปี','รหัสนักศึกษา','คะแนนรวม','คะแนนเต็ม','ร้อยละ','ระดับ','STH1','STH2','STH3','STH4','STH5','STH6','STH7','STH8','เวลาทำแบบทดสอบ'];
+    const rows=selected.map((s,i)=>[
+      i+1,q(s.name),q(s.nick),q(s.branch),s.year,q(s.sid),
+      s.score,24,Math.round(s.score/24*100),q(getLevelForScore(s.score).shortLabel),
+      s.sthScores[1],s.sthScores[2],s.sthScores[3],s.sthScores[4],
+      s.sthScores[5],s.sthScores[6],s.sthScores[7],s.sthScores[8],
+      q(s.finishedAt?new Date(s.finishedAt).toLocaleString('th-TH'):'')
+    ].join(sep));
+    const bom='\uFEFF'; // UTF-8 BOM for Thai Excel compatibility
+    const content=bom+headers.map(h=>fmt==='csv'?q(h):h).join(sep)+'\n'+rows.join('\n');
+    const ext=fmt==='tsv'?'tsv':'csv';
+    downloadFile(`sth_export_${ts}.${ext}`,content,'text/'+ext+';charset=utf-8');
+  }
+}
+
+function downloadFile(filename,content,mime){
+  const blob=new Blob([content],{type:mime});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=filename;
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},300);
+}
+
+// Close export modal on backdrop click
+document.getElementById('export-modal').addEventListener('click',function(e){
+  if(e.target===this)closeExportModal();
+});
+
+function getLevelForScore(score){return LEVELS.find(l=>score>=l.min&&score<=l.max);}
+
+async function showAdminDashboard(){
+  document.getElementById('admin-screen').classList.add('show');
+  document.getElementById('admBody').innerHTML=`
+    <div class="adm-empty">
+      <div class="adm-empty-icon">⏳</div>
+      <div class="adm-empty-text">กำลังโหลดข้อมูลจาก Google Sheets...</div>
+      <div class="adm-empty-sub">กรุณารอสักครู่</div>
+    </div>`;
+  await loadFromSheet();
+  renderAdminDashboard();
+}
+
+function renderAdminDashboard(){
+  const body=document.getElementById('admBody');
+  const db=studentDB;
+
+  if(db.length===0){
+    body.innerHTML=`
+      <div class="adm-empty">
+        <div class="adm-empty-icon">📭</div>
+        <div class="adm-empty-text">ยังไม่มีข้อมูลนักศึกษา</div>
+        <div class="adm-empty-sub">รอให้นักศึกษาทำแบบทดสอบให้เสร็จก่อนแล้วกลับมาดูที่นี่</div>
+      </div>`;
+    return;
+  }
+
+  const total=db.length;
+  const avgScore=(db.reduce((s,x)=>s+x.score,0)/total).toFixed(1);
+  const maxScore=Math.max(...db.map(x=>x.score));
+  const levelCounts={MASTER:0,ADVANCED:0,INTERMEDIATE:0,BEGINNER:0};
+  db.forEach(s=>{levelCounts[getLevelForScore(s.score).shortLabel]=(levelCounts[getLevelForScore(s.score).shortLabel]||0)+1;});
+
+  // Branches
+  const branches=[...new Set(db.map(x=>x.branch))].sort();
+  const branchColors=['#58a6ff','#3fb950','#d2a679','#f78166','#bc8cff','#39d0d8','#ffab40','#ff6b9d'];
+
+  let html=`
+  <!-- KPI CARDS -->
+  <div class="adm-section">
+    <div class="adm-section-title"><span>📊</span> ภาพรวมทั้งหมด <span class="tag">OVERVIEW</span></div>
+    <div class="adm-kpi-row">
+      <div class="adm-kpi"><div class="kpi-val kpi-blue">${total}</div><div class="kpi-lbl">ผู้ทำแบบทดสอบทั้งหมด</div></div>
+      <div class="adm-kpi"><div class="kpi-val kpi-green">${avgScore}</div><div class="kpi-lbl">คะแนนเฉลี่ย (จาก 24)</div></div>
+      <div class="adm-kpi"><div class="kpi-val kpi-gold">${maxScore}</div><div class="kpi-lbl">คะแนนสูงสุด</div></div>
+      <div class="adm-kpi"><div class="kpi-val" style="color:var(--accent4)">${branches.length}</div><div class="kpi-lbl">สาขาวิชาที่ร่วม</div></div>
+    </div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="adm-section">
+    <div class="adm-section-title"><span>📈</span> กราฟและข้อมูลภาพรวม <span class="tag">CHARTS</span></div>
+    <div class="adm-charts-row">
+      <!-- Level Distribution Bar -->
+      <div class="chart-card">
+        <div class="chart-card-title">การกระจายระดับ STH ของผู้เข้าสอบ</div>
+        <div style="margin-bottom:10px;">
+          <div class="level-dist-bars" id="levelDistBars">
+            ${buildLevelDistBars(db,total)}
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
+            <span style="font-size:11px;color:#3fb950">🟩 MASTER (${levelCounts['MASTER']})</span>
+            <span style="font-size:11px;color:#58a6ff">🟦 ADVANCED (${levelCounts['ADVANCED']})</span>
+            <span style="font-size:11px;color:#d2a679">🟨 INTERMEDIATE (${levelCounts['INTERMEDIATE']||0})</span>
+            <span style="font-size:11px;color:#f85149">🟥 BEGINNER (${levelCounts['BEGINNER']||0})</span>
+          </div>
+        </div>
+        <!-- Score bar per student -->
+        <div class="bar-chart" style="margin-top:14px;">
+          ${db.slice(0,8).map(s=>`
+            <div class="bar-row">
+              <div class="bar-lbl" style="font-size:11px;width:70px;">${s.nick}</div>
+              <div class="bar-track">
+                <div class="bar-fill" style="width:${Math.round(s.score/24*100)}%;background:${scoreColor(s.score)};">
+                  <span class="bar-val">${s.score}/24</span>
+                </div>
+              </div>
+            </div>`).join('')}
+          ${db.length>8?`<div style="font-size:11px;color:var(--text2);text-align:right;">แสดง 8 คนแรก จากทั้งหมด ${db.length} คน</div>`:''}
+        </div>
+      </div>
+
+      <!-- Branch Score Average -->
+      <div class="chart-card">
+        <div class="chart-card-title">คะแนนเฉลี่ยแยกรายสาขาวิชา</div>
+        <div class="bar-chart">
+          ${branches.map((br,bi)=>{
+            const bStudents=db.filter(s=>s.branch===br);
+            const bAvg=(bStudents.reduce((s,x)=>s+x.score,0)/bStudents.length);
+            const pct=Math.round(bAvg/24*100);
+            return `<div class="bar-row">
+              <div class="bar-lbl" style="font-size:10px;width:90px;white-space:normal;line-height:1.2;">${br}</div>
+              <div class="bar-track">
+                <div class="bar-fill" style="width:${pct}%;background:${branchColors[bi%branchColors.length]};">
+                  <span class="bar-val">${bAvg.toFixed(1)}</span>
+                </div>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+        <!-- STH level spread donut SVG -->
+        ${buildDonutChart(levelCounts,total)}
+      </div>
+    </div>
+  </div>
+
+  <!-- ALL STUDENTS TABLE -->
+  <div class="adm-section">
+    <div class="adm-section-title"><span>👥</span> รายชื่อผู้ทำแบบทดสอบทั้งหมด <span class="tag">ALL STUDENTS</span></div>
+    <div class="adm-table-wrap">
+      <table class="adm-table">
+        <thead><tr>
+          <th>#</th><th>ชื่อ-สกุล</th><th>ชื่อเล่น</th><th>สาขาวิชา</th><th>ชั้นปี</th><th>รหัส นศ.</th><th>คะแนน</th><th>ระดับ</th>
+        </tr></thead>
+        <tbody>
+          ${db.map((s,i)=>{const lv=getLevelForScore(s.score);return`
+            <tr>
+              <td class="rank-num">${i+1}</td>
+              <td style="font-weight:600;color:var(--text)">${s.name}</td>
+              <td>${s.nick}</td>
+              <td>${s.branch}</td>
+              <td>${s.year}</td>
+              <td style="font-family:monospace;font-size:12px">${s.sid}</td>
+              <td style="font-weight:700;font-size:16px;color:${scoreColor(s.score)}">${s.score}<span style="font-size:11px;color:var(--text2)">/24</span></td>
+              <td><span class="level-pill ${lv.pillCls}">${lv.shortLabel}</span></td>
+            </tr>`;}).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- BY BRANCH -->
+  <div class="adm-section">
+    <div class="adm-section-title"><span>🏛️</span> ข้อมูลแยกรายสาขาวิชา <span class="tag">BY BRANCH</span></div>
+    ${buildBranchSections(branches,db,branchColors)}
+  </div>`;
+
+  body.innerHTML=html;
+}
+
+function scoreColor(s){
+  if(s>=21)return'#3fb950';
+  if(s>=17)return'#58a6ff';
+  if(s>=12)return'#d2a679';
+  return'#f85149';
+}
+
+function buildLevelDistBars(db,total){
+  const order=['MASTER','ADVANCED','INTERMEDIATE','BEGINNER'];
+  const colors={'MASTER':'#3fb950','ADVANCED':'#58a6ff','INTERMEDIATE':'#d2a679','BEGINNER':'#f85149'};
+  return order.map(lbl=>{
+    const count=db.filter(s=>getLevelForScore(s.score).shortLabel===lbl).length;
+    if(!count)return'';
+    const pct=Math.round(count/total*100);
+    return`<div class="level-dist-bar" style="flex:${count};background:${colors[lbl]};">${pct}%</div>`;
+  }).join('');
+}
+
+function buildDonutChart(lc,total){
+  if(total===0)return'';
+  const data=[
+    {lbl:'MASTER',val:lc['MASTER']||0,col:'#3fb950'},
+    {lbl:'ADVANCED',val:lc['ADVANCED']||0,col:'#58a6ff'},
+    {lbl:'INTERMEDIATE',val:lc['INTERMEDIATE']||0,col:'#d2a679'},
+    {lbl:'BEGINNER',val:lc['BEGINNER']||0,col:'#f85149'},
+  ].filter(d=>d.val>0);
+  const r=40,cx=55,cy=55,stroke=14;
+  const circ=2*Math.PI*r;
+  let offset=0;
+  const slices=data.map(d=>{
+    const pct=d.val/total;
+    const dash=pct*circ;
+    const gap=circ-dash;
+    const sl=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${d.col}" stroke-width="${stroke}" stroke-dasharray="${dash.toFixed(1)} ${gap.toFixed(1)}" stroke-dashoffset="${(circ-offset).toFixed(1)}" style="transform:rotate(-90deg);transform-origin:${cx}px ${cy}px;"/>`;
+    offset+=dash;
+    return sl;
+  }).join('');
+  return`<div class="donut-wrap" style="margin-top:16px;">
+    <svg width="110" height="110" viewBox="0 0 110 110">${slices}
+      <text x="55" y="52" text-anchor="middle" fill="#e6edf3" font-size="14" font-weight="800">${total}</text>
+      <text x="55" y="66" text-anchor="middle" fill="#8b949e" font-size="9">คน</text>
+    </svg>
+    <div class="donut-legend">
+      ${data.map(d=>`<div class="donut-legend-item"><div class="donut-dot" style="background:${d.col}"></div>${d.lbl} (${d.val})</div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function buildBranchSections(branches,db,branchColors){
+  return branches.map((br,bi)=>{
+    const bStudents=db.filter(s=>s.branch===br).sort((a,b)=>a.finishedAt-b.finishedAt);
+    const bAvg=(bStudents.reduce((s,x)=>s+x.score,0)/bStudents.length);
+    const bMax=Math.max(...bStudents.map(x=>x.score));
+    const bMin=Math.min(...bStudents.map(x=>x.score));
+    const lcs={MASTER:0,ADVANCED:0,INTERMEDIATE:0,BEGINNER:0};
+    bStudents.forEach(s=>{const l=getLevelForScore(s.score).shortLabel;lcs[l]=(lcs[l]||0)+1;});
+    const dominantLevel=Object.entries(lcs).sort((a,b)=>b[1]-a[1])[0];
+    const col=branchColors[bi%branchColors.length];
+
+    // Analysis text
+    const analysisText=generateBranchAnalysis(br,bStudents,bAvg,bMax,bMin,lcs,dominantLevel);
+
+    return`
+    <div class="branch-analysis-card">
+      <div class="ba-header">
+        <div style="width:10px;height:36px;border-radius:3px;background:${col};flex-shrink:0;"></div>
+        <div>
+          <div class="ba-branch-name">${br}</div>
+        </div>
+        <div class="ba-count">${bStudents.length} คน</div>
+      </div>
+      <div class="ba-stats-row">
+        <div class="ba-stat"><div class="ba-stat-val" style="color:${col}">${bAvg.toFixed(1)}</div><div class="ba-stat-lbl">คะแนนเฉลี่ย</div></div>
+        <div class="ba-stat"><div class="ba-stat-val" style="color:#3fb950">${bMax}</div><div class="ba-stat-lbl">สูงสุด</div></div>
+        <div class="ba-stat"><div class="ba-stat-val" style="color:#f85149">${bMin}</div><div class="ba-stat-lbl">ต่ำสุด</div></div>
+        <div class="ba-stat"><div class="ba-stat-val" style="color:${col}">${Math.round(bAvg/24*100)}%</div><div class="ba-stat-lbl">ร้อยละ</div></div>
+      </div>
+      <!-- Level distribution bar for this branch -->
+      <div style="margin-bottom:14px;">
+        <div style="font-size:11px;color:var(--text2);margin-bottom:6px;">การกระจายระดับภายในสาขา</div>
+        <div class="level-dist-bars" style="height:22px;">${buildLevelDistBars(bStudents,bStudents.length)}</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;">
+          ${Object.entries(lcs).filter(([,v])=>v>0).map(([k,v])=>{
+            const lv=LEVELS.find(l=>l.shortLabel===k);
+            return`<span style="font-size:11px;color:${lv?lv.cls.includes('master')?'#3fb950':lv.cls.includes('advanced')?'#58a6ff':lv.cls.includes('inter')?'#d2a679':'#f85149':'#fff'}">${k}: ${v} คน</span>`;
+          }).join('')}
+        </div>
+      </div>
+      <!-- Table -->
+      <div class="adm-table-wrap" style="margin-bottom:14px;">
+        <table class="adm-table">
+          <thead><tr><th>ลำดับ</th><th>ชื่อ-สกุล</th><th>ชื่อเล่น</th><th>ชั้นปี</th><th>รหัส นศ.</th><th>คะแนน</th><th>ระดับ</th></tr></thead>
+          <tbody>
+            ${bStudents.map((s,i)=>{const lv=getLevelForScore(s.score);return`
+              <tr>
+                <td class="rank-num">${i+1}</td>
+                <td style="font-weight:600;color:var(--text)">${s.name}</td>
+                <td>${s.nick}</td>
+                <td>${s.year}</td>
+                <td style="font-family:monospace;font-size:12px">${s.sid}</td>
+                <td style="font-weight:700;font-size:15px;color:${scoreColor(s.score)}">${s.score}<span style="font-size:11px;color:var(--text2)">/24</span></td>
+                <td><span class="level-pill ${lv.pillCls}">${lv.shortLabel}</span></td>
+              </tr>`;}).join('')}
+          </tbody>
+        </table>
+      </div>
+      <!-- Analysis -->
+      <div class="ba-analysis">${analysisText}</div>
+    </div>`;
+  }).join('');
+}
+
+function generateBranchAnalysis(branch,students,avg,max,min,lcs,dominant){
+  const n=students.length;
+  const pct=Math.round(avg/24*100);
+  const masterPct=Math.round((lcs['MASTER']||0)/n*100);
+  const beginnerPct=Math.round((lcs['BEGINNER']||0)/n*100);
+  let level='ปานกลาง';
+  if(pct>=80)level='สูงมาก';
+  else if(pct>=70)level='ดี';
+  else if(pct>=50)level='ปานกลาง';
+  else level='ต้องพัฒนา';
+
+  let text=`📊 <b>บทวิเคราะห์รายสาขา — ${branch}</b><br><br>`;
+  text+=`นักศึกษาสาขา <b>${branch}</b> จำนวน ${n} คน มีคะแนนเฉลี่ย <b>${avg.toFixed(1)} คะแนน</b> จาก 24 คะแนน (${pct}%) `;
+  text+=`ซึ่งอยู่ในระดับ<b>${level}</b> `;
+  if(max===min){text+=`โดยทุกคนได้คะแนนเท่ากัน สะท้อนความสม่ำเสมอของกลุ่ม `;}
+  else{text+=`คะแนนสูงสุดคือ ${max} และต่ำสุดคือ ${min} ช่วงกระจายคะแนน ${max-min} คะแนน `;}
+
+  if(dominant[1]>0){
+    text+=`<br><br>ระดับที่พบมากที่สุดในสาขานี้คือ <b>${dominant[0]}</b> (${dominant[1]} คน) `;
+  }
+  if(masterPct>50){text+=`นักศึกษาส่วนใหญ่มีทักษะ Systems Thinking ระดับสูง พร้อมรับงานวิเคราะห์เชิงระบบที่ซับซ้อน `;}
+  else if(beginnerPct>50){text+=`นักศึกษาส่วนใหญ่ยังอยู่ในระดับเริ่มต้น ควรเสริมทักษะพื้นฐานการคิดเชิงระบบ `;}
+  else{text+=`นักศึกษามีการกระจายระดับที่หลากหลาย สะท้อนพื้นฐานความรู้ที่แตกต่างกัน `;}
+
+  text+=`<br><br>💡 <b>ข้อเสนอแนะ:</b> `;
+  if(avg>=20){text+=`สาขานี้มีผลการเรียนรู้ด้าน STH ที่ดีเยี่ยม ควรส่งเสริมให้นักศึกษาประยุกต์ใช้กับโปรเจกต์จริงในสาขา`;}
+  else if(avg>=16){text+=`สาขานี้มีพื้นฐาน STH ที่แข็งแกร่ง ควรเน้นพัฒนาขั้น 7–8 (Hidden Dimension & Temporal Thinking) เพิ่มเติม`;}
+  else if(avg>=12){text+=`ควรเพิ่มกิจกรรมฝึก Causal Loop Diagram และการวิเคราะห์ Feedback Loop ในกิจกรรมชั้นเรียน`;}
+  else{text+=`แนะนำปรับเนื้อหาการสอน Systems Thinking ให้เชื่อมกับบริบทของสาขาโดยตรง เพื่อเพิ่มความเข้าใจและแรงจูงใจ`;}
+
+  return text;
+}
+
+/* ═══════════════════════════════════════
+   RENDER QUIZ
+═══════════════════════════════════════ */
+function getSit(q){return situations.find(s=>s.id===q.set);}
+function renderAll(){renderQNav();renderQuestion();renderSituation();renderProgress();}
+
+function renderSituation(){
+  const q=Q[curIdx],sit=getSit(q);
+  document.getElementById('situationSetLabel').textContent=sit.label;
+  document.getElementById('situationContent').innerHTML=`
+    <div class="situation-set-label">${sit.label}</div>
+    <div class="situation-card">
+      <div class="sit-title">${sit.title}</div>
+      <div class="sit-body">${sit.body.replace(/\n\n/g,'</p><p style="margin-top:10px">').replace(/\n/g,'<br>')}</div>
+      <div class="sit-measure">📐 ข้อ ${q.id} วัด STH ขั้นที่ ${q.sth}</div>
+    </div>`;
+}
+
+function renderQuestion(){
+  const q=Q[curIdx],answered=ans[curIdx],L=['ก','ข','ค','ง'];
+  document.getElementById('questionSetLabel').textContent=`ข้อ ${q.id} / 24`;
+  document.getElementById('qNum').innerHTML=`ข้อที่ ${q.id} <span class="sth-chip">STH ขั้น ${q.sth}</span>`;
+  document.getElementById('qText').textContent=q.text;
+  const ct=document.getElementById('choicesContainer');ct.innerHTML='';
+  q.c.forEach((ch,i)=>{
+    const btn=document.createElement('button');
+    btn.className='choice-btn';
+    btn.innerHTML=`<span class="choice-letter">${L[i]}</span><span>${ch}</span>`;
+    if(answered!==null){
+      btn.disabled=true;
+      if(i===q.a){btn.classList.add('correct');if(i===answered)btn.classList.add('new-anim');}
+      else if(i===answered&&answered!==q.a)btn.classList.add('wrong','new-anim');
+    }
+    btn.addEventListener('click',()=>selectAns(i));
+    ct.appendChild(btn);
+  });
+  const expEl=document.getElementById('explanation');
+  if(answered!==null){
+    const ok=answered===q.a;
+    document.getElementById('expContent').innerHTML=`<span class="correct-ans">${ok?'✓ ถูกต้อง!':'✗ ไม่ถูกต้อง — คำตอบที่ถูก: ตัวเลือก '+L[q.a]}</span><br>${q.r}`;
+    expEl.classList.add('show');
+  }else{expEl.classList.remove('show');}
+  document.getElementById('btnPrev').disabled=curIdx===0;
+  const allDone=ans.every(x=>x!==null);
+  document.getElementById('btnNext').style.display=curIdx===Q.length-1?'none':'block';
+  document.getElementById('btnFinish').style.display=allDone?'block':'none';
+}
+
+function renderQNav(){
+  const nav=document.getElementById('qNav');nav.innerHTML='';
+  Q.forEach((q,i)=>{
+    const d=document.createElement('div');d.className='q-dot';d.textContent=q.id;
+    if(i===curIdx)d.classList.add('active');
+    if(ans[i]!==null)d.classList.add(ans[i]===q.a?'answered-correct':'answered-wrong');
+    d.addEventListener('click',()=>{curIdx=i;renderAll();});
+    nav.appendChild(d);
+  });
+}
+
+function renderProgress(){
+  const done=ans.filter(x=>x!==null).length;
+  const sc=ans.filter((x,i)=>x===Q[i].a).length;
+  document.getElementById('progressBar').style.width=Math.round(done/Q.length*100)+'%';
+  document.getElementById('progressLabel').textContent=`${done} / ${Q.length}`;
+  document.getElementById('scoreNum').textContent=sc;
+  document.getElementById('scoreTot').textContent=done;
+}
+
+/* ═══════════════════════════════════════
+   ANSWER FLASH
+═══════════════════════════════════════ */
+function showFlash(ok){
+  const el=document.getElementById('ansFlash');
+  el.textContent=ok?'✅':'❌';
+  el.classList.remove('pop','fade');
+  void el.offsetWidth;
+  el.classList.add('pop');
+  setTimeout(()=>{el.classList.remove('pop');el.classList.add('fade');},550);
+  setTimeout(()=>el.classList.remove('fade'),950);
+}
+
+/* ═══════════════════════════════════════
+   SELECT & NAVIGATE
+═══════════════════════════════════════ */
+function selectAns(idx){
+  if(ans[curIdx]!==null)return;
+  ans[curIdx]=idx;
+  const ok=idx===Q[curIdx].a;
+  if(ok)playCorrect();else playWrong();
+  showFlash(ok);
+  renderAll();
+  if(curIdx===11&&!breakDone)setTimeout(()=>showBreak(),650);
+}
+
+function navigate(dir){
+  const n=curIdx+dir;
+  if(n>=0&&n<Q.length){curIdx=n;renderAll();document.querySelector('.question-scroll').scrollTop=0;}
+}
+
+/* ═══════════════════════════════════════
+   BREAK
+═══════════════════════════════════════ */
+function showBreak(){
+  breakDone=true;bkCount=10;
+  document.getElementById('break-screen').classList.add('show');
+  updateBkRing(10);
+  document.getElementById('bkNum').textContent='10';
+  startBkMusic();
+  bkTimer=setInterval(()=>{
+    bkCount--;
+    document.getElementById('bkNum').textContent=bkCount;
+    updateBkRing(bkCount);
+    if(bkCount<=0){clearInterval(bkTimer);endBreak();}
+  },1000);
+}
+
+function updateBkRing(n){
+  const circ=351,ring=document.getElementById('bkRing');
+  ring.style.strokeDashoffset=circ*(1-n/10);
+  ring.style.stroke=`hsl(${Math.round(30+90*(n/10))},80%,55%)`;
+}
+
+function endBreak(){
+  clearInterval(bkTimer);stopBkMusic();
+  document.getElementById('break-screen').classList.remove('show');
+  curIdx=12;renderAll();
+  document.querySelector('.question-scroll').scrollTop=0;
+}
+
+/* ═══════════════════════════════════════
+   SUMMARY
+═══════════════════════════════════════ */
+async function showSummary(){
+  const score=ans.filter((x,i)=>x===Q[i].a).length;
+
+  // Save to studentDB + Google Sheets
+  if(currentStudent){
+    const sthScores={};
+    for(let s=1;s<=8;s++){
+      const qs=Q.filter(q=>q.sth===s);
+      sthScores[s]=qs.filter(q=>ans[q.id-1]===q.a).length;
+    }
+    const record={...currentStudent,score,level:getLevelForScore(score).shortLabel,finishedAt:Date.now(),sthScores};
+    studentDB.push(record);   // เก็บใน memory ทันที
+    saveToSheet(record);      // ส่ง Google Sheets (ไม่ await เพื่อไม่ให้หน้าค้าง)
+    currentStudent=null;      // prevent double-save
+  }
+
+  document.getElementById('sumScore').textContent=score;
+  document.getElementById('sumName').textContent=`${document.getElementById('f-name').value} (${document.getElementById('f-nick').value}) · ${document.getElementById('f-branch').value}`;
+  const lv=getLevelForScore(score);
+  document.getElementById('sumLevelCard').innerHTML=`
+    <div class="lvl-card ${lv.cls}">
+      <div class="lc-badge">${lv.badge}</div>
+      <div class="lc-title">${lv.title}</div>
+      <div class="lc-desc">${lv.desc}</div>
+      <div class="lc-tips">${lv.tips}</div>
+    </div>`;
+  const sg=document.getElementById('sthGrid');sg.innerHTML='';
+  for(let s=1;s<=8;s++){
+    const qs=Q.filter(q=>q.sth===s);
+    const ok=qs.filter(q=>ans[q.id-1]===q.a).length;
+    const cls=ok===3?'perfect':ok===2?'partial':'poor';
+    sg.innerHTML+=`<div class="sth-cell"><div class="sc-label">STH ขั้น ${s}</div><div class="sc-val ${cls}">${ok}/3</div></div>`;
+  }
+  document.getElementById('summary-screen').classList.add('show');
+}
+
+function restartQuiz(){
+  ans=new Array(Q.length).fill(null);curIdx=0;breakDone=false;currentStudent=null;
+  document.getElementById('summary-screen').classList.remove('show');
+  document.getElementById('quiz-screen').classList.remove('active');
+  // Reset form
+  ['f-name','f-nick','f-branch','f-id'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-year').value='';
+  document.getElementById('regNextBtn').classList.remove('show');
+  document.getElementById('regError').classList.remove('show');
+  document.getElementById('cover-screen').style.display='flex';
+}
+
+/* ═══════════════════════════════════════
+   INIT
+═══════════════════════════════════════ */
+initParticles('cvParticles');
+initParticles('regParticles');
+</script>
+</body>
+</html>
